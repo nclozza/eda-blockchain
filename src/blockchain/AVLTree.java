@@ -1,6 +1,6 @@
 package blockchain;
 
-public class AVLTree<T>{
+public class AVLTree<T extends Comparable<? super T>> implements BSTinterface<T>, AVLinterface<T>{
 
     private Node<T> header;
 
@@ -47,7 +47,7 @@ public class AVLTree<T>{
         int maxLevel = 5;
         String auxS = " ";
 
-        System.out.println(aux + aux.getData().toString());
+        System.out.println(aux.getData().toString());
         for (int i = 0 ; i < maxLevel && aux.getRight() != null ; i++){
             System.out.println(auxS + "\\");
             aux = aux.getRight();
@@ -61,6 +61,36 @@ public class AVLTree<T>{
         return header.getHeight();
     }
 
+    @Override
+    public boolean isEmpty() {
+
+    }
+
+    @Override
+    public int size() {
+
+    }
+
+    @Override
+    public Node<T> search(T data) {
+
+    }
+
+    @Override
+    public boolean add() {
+
+    }
+
+    @Override
+    public Node<T> getSuccessor() {
+
+    }
+
+    @Override
+    public boolean delete(T data) {
+
+    }
+
     public int getMaxLevel(){
         return header.getMaxLevel();
     }
@@ -70,7 +100,7 @@ public class AVLTree<T>{
         return val == 1 || val == -1 || val == 0;
     }
 
-    private class Node<T>{
+    protected static class Node<T>{
         private T data;
         private Node<T> right;
         private Node<T> left;

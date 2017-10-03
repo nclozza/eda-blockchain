@@ -15,5 +15,6 @@ public class Main {
 		System.out.println("Max level: " + tree.getMaxLevel());
 	    System.out.println(tree.getHeight());
 	    System.out.println(tree.isBalanced());
+	    tree.printAVL();
     }
 }
