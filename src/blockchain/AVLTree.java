@@ -1,7 +1,5 @@
 package blockchain;
 
-
-import javax.naming.NameNotFoundException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -287,7 +285,6 @@ public class AVLTree<T extends Comparable<? super T>>{
         public Node<T> getLeft(){
             return this.left;
         }
-
 
         public void setRight(Node<T> node){
             this.right = node;
