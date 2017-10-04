@@ -13,16 +13,27 @@ public class Main {
 
 
 			tree.insert(10);
+			tree.preOrder(tree.getRoot());
+			System.out.println("");
 			tree.insert(20);
+			tree.preOrder(tree.getRoot());
+			System.out.println("");
 			tree.insert(30);
+			tree.preOrder(tree.getRoot());
+			System.out.println("");
 			tree.insert(44);
+			tree.preOrder(tree.getRoot());
+			System.out.println("");
 			tree.insert(50);
+			tree.preOrder(tree.getRoot());
+			System.out.println("");
 			tree.insert(25);
-			tree.delete(30);
+//			tree.delete(30);
 
 //		System.out.print("Printing balance: ");
 //		tree.printBalance();
 		System.out.println("");
+		System.out.println("FINAL TREE:");
 		tree.preOrder(tree.getRoot());
 
 
