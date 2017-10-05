@@ -41,7 +41,7 @@ public class AVLTree<T extends Comparable<? super T>>{
 
         if (data.compareTo(currentData) == 0) {
 
-            System.out.println("Found the data that we want to remove: " + currentData);
+            System.out.println("Found the data that we want to remove: " + currentData.toString());
 
             if (leftChild == null && rightChild == null) {
                 System.out.println("Removing a leaf node");
@@ -61,7 +61,7 @@ public class AVLTree<T extends Comparable<? super T>>{
 
                 // Swap the root node with the largest in left sub-tree
                 node.setData(largestInLeftSubtree.getData());
-                // Set left-child recursively. Remove the copy left of the largest left child
+                // Set left-child recursively. Remove the copy left of the largest left-child
                 node.setLeft(deleteR(largestInLeftSubtree.getData(),node.getLeft()));
 
             }
@@ -110,7 +110,7 @@ public class AVLTree<T extends Comparable<? super T>>{
     }
 
     //just to test
-    public void byLevel(Node<T> root){
+    public void byLevel(Node<T> root) {
         Queue<Node> level  = new LinkedList<>();
         level.add(root);
         while(!level.isEmpty()){
