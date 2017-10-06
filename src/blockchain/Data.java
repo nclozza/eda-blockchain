@@ -1,8 +1,5 @@
 package blockchain;
 
-/**
- * Created by Nico on 5/10/2017.
- */
 public class Data<T> {
 
   private Operation<T> operation;
