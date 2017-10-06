@@ -28,6 +28,29 @@ public class AVLTree<T extends Comparable<? super T>> {
   public String toStringForHash() {
     return this.toString();
   }
+  
+  public boolean contains(T x){
+        return containsR(x, header);
+    }
+
+    /**
+     *
+     * @param x Element to find
+     * @param node Root of the tree
+     * @return True if the element is found, false otherwise
+     */
+    private boolean containsR(T x, Node<T> node) {
+        if (node == null){
+            return false; // The node was not found
+
+        } else if (x.compareTo(node.getData()) < 0){
+            return containsR(x, node.getLeft());
+        } else if (x.compareTo(node.getData()) > 0){
+            return containsR(x, node.getRight());
+        }
+
+        return true; // Can only reach here if node was found
+    }
 
 //    public Node<T> find(T data){
 //        return findR(data, header);
@@ -36,10 +59,22 @@ public class AVLTree<T extends Comparable<? super T>> {
 //    private Node<T> findR(T data, Node<T> header) {
 //    }
 
+  /**
+     * Delete operation. Calls a private recursive method
+     * @param data Element to delete
+     * @return Null if a leaf has been deleted
+     *         Balance of new tree otherwise
+     */
   public boolean delete(T data) {
     return deleteR(data, header) != null;
   }
 
+  /**
+     *
+     * @param data Element to delete
+     * @param node Root of the tree
+     * @return Header after deletion, balanced
+     */
   private Node<T> deleteR(T data, Node<T> node) {
     if (node == null) return null;
     Node<T> leftChild = node.getLeft();
@@ -94,6 +129,11 @@ public class AVLTree<T extends Comparable<? super T>> {
     return node.getRight();
   }
 
+  /**
+     * Balances the new tree after deletion of an element
+     * @param currentNode Header
+     * @return Tree balanced
+     */
   private Node<T> balanceTreeAfterDeletion(Node<T> currentNode) {
     int balanceValue = getBalance(currentNode);
     // Left heavy situation. Can be left-left or left-right
@@ -139,6 +179,11 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
   }
 
+  /**
+     * Inserts a new node. Calls a private recursive insert function
+     * @param data element to insert
+     * @return void
+     */
   public void insert(T data) {
     System.out.println("");
     System.out.println("Voy a insertar: " + data.toString());
