@@ -3,9 +3,14 @@ package visual;
 /**
  * Created by Bianca on 6/10/2017.
  */
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+
+import blockchain.Node;
 import blockchain.AVLTree;
 
 /*
@@ -14,7 +19,7 @@ import blockchain.AVLTree;
 class BinaryTreeView<E> extends JPanel {
 
     /* The tree currently being display */
-    protected AVLTree.Node tree;
+    protected Node tree;
 
     /* The max. height of any tree drawn so far.  This
        is used to avoid the tree jumping around when nodes
@@ -22,16 +27,27 @@ class BinaryTreeView<E> extends JPanel {
     protected int maxHeight;
 
     /* The font for the tree nodes. */
-    protected Font font = new Font("Roman", 0, 30);
+    protected Font font = new Font("Courier New", 1, 30);
 
     /*
      * Create a new window with the given width and height
      * that is showing the given tree.
      */
-    public BinaryTreeView(AVLTree.Node tree, int width, int height) {
+    private Image backgroundImage;
 
+    // Some code to initialize the background image.
+    // Here, we use the constructor to load the image. This
+    // can vary depending on the use case of the panel.
+
+
+    public BinaryTreeView(Node tree, int width, int height) throws IOException {
+
+        //Import background image from external file
+        //backgroundImage = ImageIO.read(new File("C:/Users/Bianca/Pictures/RickAndMorty.jpg"));
+
+        Color background = new Color(240, 122, 0);
         //Initialize drawing colors, border, opacity.
-        setBackground(Color.white);
+        setBackground(background);
         setForeground(Color.black);
 
         // Create window and make it so hitting the close icon
@@ -54,9 +70,9 @@ class BinaryTreeView<E> extends JPanel {
     /*
      * Set the display to show the given tree.
      */
-    public void setTree(AVLTree.Node t) {
+    public void setTree(Node t) {
         tree = t;
-        maxHeight = tree.height();
+        maxHeight = tree.getHeight();
     }
 
     /*
@@ -77,7 +93,7 @@ class BinaryTreeView<E> extends JPanel {
      * will be separated by yStep pixels.
      */
     protected void drawTree(Graphics g, int minX, int maxX,
-                            int y, int yStep, AVLTree.Node tree) {
+                            int y, int yStep, Node tree) {
 
         String s = tree.getData().toString();
 
@@ -116,9 +132,11 @@ class BinaryTreeView<E> extends JPanel {
         super.paintComponent(g);      //clears the background
         int width = getWidth();
         int height = getHeight();
-        maxHeight = Math.max(tree.height(), maxHeight);
+        maxHeight = Math.max(tree.getHeight(), maxHeight);
         int treeHeight = maxHeight;
 
+        //Draws background based on external image
+        //g.drawImage(backgroundImage, 0, 0, this);
         drawTree(g, 0, width, 0, height / (treeHeight + 1), tree);
 
     }
@@ -126,7 +144,7 @@ class BinaryTreeView<E> extends JPanel {
     /*
      * Test code.
      */
-    public static void main(String s[]) {
+    public static void main(String s[]) throws IOException {
         AVLTree<Integer> t = new AVLTree();
         t.insert(3);
         t.insert(4);
@@ -137,6 +155,6 @@ class BinaryTreeView<E> extends JPanel {
         t.insert(2);
         t.insert(1);
 
-        BinaryTreeView<Integer> btv = new BinaryTreeView<>(t.getRoot(),400, 400 );
+        BinaryTreeView<Integer> btv = new BinaryTreeView<>(t.getRoot(),800, 600 );
     }
 }
