@@ -21,6 +21,13 @@ public class AVLTree<T extends Comparable<? super T>> {
   public Node<T> getRoot() {
     return header;
   }
+  
+  /**
+   * This is a temporary implementation, we need to change this
+   */
+  public String toStringForHash() {
+    return this.toString();
+  }
 
 //    public Node<T> find(T data){
 //        return findR(data, header);
@@ -151,13 +158,6 @@ public class AVLTree<T extends Comparable<? super T>> {
     return;
   }
 
-  /**
-   * This is a temporary implementation, we need to change this
-   */
-  public String toStringForHash() {
-    return this.toString();
-  }
-
   private Node<T> insertR(Node<T> node, T data) {
     Node<T> aux = node;
     if (data.compareTo(node.getData()) < 0) {
@@ -259,7 +259,6 @@ public class AVLTree<T extends Comparable<? super T>> {
 
     return N.height;
   }
-
 
   private class Node<T> {
     private T data;
