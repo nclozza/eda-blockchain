@@ -21,7 +21,7 @@ public class AVLTree<T extends Comparable<? super T>> {
   public Node<T> getRoot() {
     return header;
   }
-  
+
   /**
    * This is a temporary implementation, we need to change this
    */
