@@ -1,43 +1,17 @@
-import blockchain.AVLTree;
-import java.util.LinkedList;
-import java.util.Queue;
+import blockchain.Blockchain;
 
 public class Main {
 
-    public static void main(String[] args) {
-	    AVLTree tree = new AVLTree<>();
+  public static void main(String[] args) {
 
-//		System.out.println("Max level: " + tree.getMaxLevel());
-//	    System.out.println(tree.getHeight());
-//	    System.out.println(tree.isBalanced());
+    Blockchain<Integer> blockchain = new Blockchain<>(4);
 
+    blockchain.add(4);
+    blockchain.add(5);
 
-			tree.insert(10);
-			tree.preOrder(tree.getRoot());
-			System.out.println("");
-			tree.insert(20);
-			tree.preOrder(tree.getRoot());
-			System.out.println("");
-			tree.insert(30);
-			tree.preOrder(tree.getRoot());
-			System.out.println("");
-			tree.insert(44);
-			tree.preOrder(tree.getRoot());
-			System.out.println("");
-			tree.insert(50);
-			tree.preOrder(tree.getRoot());
-			System.out.println("");
-			tree.insert(25);
-//			tree.delete(30);
+    blockchain.printAVLTree();
 
-//		System.out.print("Printing balance: ");
-//		tree.printBalance();
-		System.out.println("");
-		System.out.println("FINAL TREE:");
-		tree.preOrder(tree.getRoot());
-
-
-    }
+  }
 
 
 }
