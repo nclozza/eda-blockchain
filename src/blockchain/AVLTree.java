@@ -2,6 +2,7 @@ package blockchain;
 
 
 import javax.naming.NameNotFoundException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -9,6 +10,12 @@ public class AVLTree<T extends Comparable<? super T>> {
 
     private Node<T> header;
     private boolean wasRotated = false;
+    private HashMap<T, LinkedList<Integer>> modifiedFields = null;
+    /* Key = T = We use the data of the node as a key, if some operation modifies it, we add
+    the block's index as a value, so when we do lookUp method we just need to return
+    modifiedFields.get(key).
+    ITS NOT IMPLEMENTED AS FUNCTIONAL YET
+     */
 
     public AVLTree(T data) {
         header = new Node<T>(data);
@@ -52,12 +59,21 @@ public class AVLTree<T extends Comparable<? super T>> {
         return true; // Can only reach here if node was found
     }
 
-//    public Node<T> find(T data){
-//        return findR(data, header);
-//    }
-//
-//    private Node<T> findR(T data, Node<T> header) {
-//    }
+    public LinkedList<Integer> lookUp(T data){
+        return lookUpR(data, header);
+    }
+
+    private LinkedList<Integer> lookUpR(T data, Node<T> node) {
+        if (node == null) return null;
+
+        if (data.compareTo(node.getData()) < 0){
+            return lookUpR(data, node.getLeft());
+        } else if (data.compareTo(node.getData()) > 0){
+            return lookUpR(data, node.getRight());
+        }
+
+        return modifiedFields.get(data);
+    }
 
     /**
      * Delete operation. Calls a private recursive method
@@ -187,6 +203,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     public void insert(T data) {
         System.out.println("");
         System.out.println("Voy a insertar: " + data.toString());
+        if (contains(data)) throw new RuntimeException("CANT ADD DOUBLE VALUES");
         if (header != null) {
             header = insertR(header, data);
             if (wasRotated) System.out.println("Tambien rota nodo: " + header.getData().toString());
