@@ -58,7 +58,6 @@ public class InputArea extends JPanel implements ActionListener {
 
     public String textSelector(String text){
         while (true) {
-            System.out.println("Text: " + text);
             String input = text;
 
             if (input.matches("^(add\\s\\d*)$")) {
