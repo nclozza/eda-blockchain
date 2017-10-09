@@ -1,6 +1,8 @@
 package blockchain;
 
 
+import com.sun.org.apache.bcel.internal.generic.DUP;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -80,7 +82,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return Null if a leaf has been deleted
      *         Balance of new tree otherwise
      */
-    public boolean delete(T data) {
+    public boolean delete(T data) throws NodeNotFoundException {
         return deleteR(data, header) != null;
     }
 
@@ -90,9 +92,10 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @param node Root of the tree
      * @return Header after deletion, balanced
      */
-    private Node<T> deleteR(T data, Node<T> node) {
-        if (node == null)
-            return null;
+    private Node<T> deleteR(T data, Node<T> node) throws NodeNotFoundException {
+        if (node == null) {
+            throw new NodeNotFoundException("The node with the specified data doesn't exist in the tree.");
+        }
 
         Node<T> leftChild = node.getLeft();
         Node<T> rightChild = node.getRight();
@@ -230,7 +233,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @param data element to insert
      * @return void
      */
-    public void insert(T data) {
+    public void insert(T data) throws DuplicateNodeInsertException {
         System.out.println("");
         System.out.println("Voy a insertar: " + data.toString());
         //if (contains(data)) throw new RuntimeException("CANT ADD DOUBLE VALUES");
@@ -253,7 +256,7 @@ public class AVLTree<T extends Comparable<? super T>> {
         System.out.println("");
     }
 
-    private Node<T> insertR(Node<T> node, T data) {
+    private Node<T> insertR(Node<T> node, T data) throws DuplicateNodeInsertException {
         if (data.compareTo(node.getData()) < 0) {
             if (node.getLeft() == null) {
                 Node<T> newNode = new Node(data);
@@ -277,7 +280,7 @@ public class AVLTree<T extends Comparable<? super T>> {
                 node.setRight(insertR(node.getRight(), data));
             }
         } else {
-            //THROW EXCEPTION PORQUE NODE.DATA == DATA Y NO ACEPTA REPETIDOS
+            throw new DuplicateNodeInsertException("This AVL tree implementation doesn't allow for duplicate nodes.");
         }
 
         if ((node.getLeft() == null) && (node.getRight() != null)) {
