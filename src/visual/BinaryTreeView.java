@@ -65,8 +65,12 @@ public class BinaryTreeView<T> extends JPanel {
    * Set the display to show the given tree.
    */
   public void setTree(Node<T> t) {
-    tree = t;
-    maxHeight = tree.getHeight();
+    if (t == null) {
+      maxHeight = 0;
+    } else {
+      tree = t;
+      maxHeight = tree.getHeight();
+    }
   }
 
   /*

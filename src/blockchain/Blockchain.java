@@ -8,20 +8,19 @@ public class Blockchain<T extends Comparable<? super T>> {
   private LinkedList<Block<T>> blockchain;
   private int zeros;
 
-  public Blockchain(int zeros) {
+  public Blockchain() {
     this.avlTree = new AVLTree<>();
     this.blockchain = new LinkedList<>();
+  }
+
+  public void setZeros(int zeros) {
     this.zeros = zeros;
   }
 
-  /**
-   * TODO: The AVLTree method insert must return if the element can be added, now we are hardcoding this value.
-   */
-  public void add(T element) {
-    this.avlTree.insert(element);
+  public void add(T element, boolean status) {
 
-    //We suppose that the element its added correctly in the tree
-    Add<T> operation = new Add<>(element, true);
+
+    Add<T> operation = new Add<>(element, status);
     Data<T> data = new Data<>(operation, this.avlTree);
     String previousBlockHash;
     if (blockchain.size() == 0) {
