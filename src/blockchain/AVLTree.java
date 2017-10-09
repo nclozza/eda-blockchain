@@ -82,7 +82,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return Null if a leaf has been deleted
      *         Balance of new tree otherwise
      */
-    public boolean delete(T data) {
+    public boolean delete(T data) throws NodeNotFoundException {
         return deleteR(data, header) != null;
     }
 
@@ -92,10 +92,9 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @param node Root of the tree
      * @return Header after deletion, balanced
      */
-    private Node<T> deleteR(T data, Node<T> node) {
+    private Node<T> deleteR(T data, Node<T> node) throws NodeNotFoundException {
         if (node == null) {
-            //throw new NodeNotFoundException
-            return null;
+            throw new NodeNotFoundException("The node with the specified data doesn't exist in the tree.");
         }
 
         Node<T> leftChild = node.getLeft();
@@ -107,8 +106,8 @@ public class AVLTree<T extends Comparable<? super T>> {
                 if (node == header) {
                     header = null;
                 }
+		return null;
 
-                return null;
             } else if (leftChild == null) {
                 if (node == header) {
                     header = rightChild;
@@ -123,9 +122,7 @@ public class AVLTree<T extends Comparable<? super T>> {
                 return header;
             } else {
                 Node<T> largestInLeftSubtree = getMaxNode(leftChild);
-
                 node.setData(largestInLeftSubtree.getData());
-
                 node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
 
             }
@@ -229,13 +226,9 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @param data element to insert
      * @return void
      */
-    public void insert(T data) {
-        System.out.println("");
-        System.out.println("Voy a insertar: " + data.toString());
-        //if (contains(data)) throw new RuntimeException("CANT ADD DOUBLE VALUES");
+    public void insert(T data) throws DuplicateNodeInsertException {
         if (header != null) {
             header = insertR(header, data);
-
             wasRotated = false;
 
             return;
@@ -246,7 +239,7 @@ public class AVLTree<T extends Comparable<? super T>> {
         modifiedNodes.add(header);
     }
 
-    private Node<T> insertR(Node<T> node, T data) {
+    private Node<T> insertR(Node<T> node, T data) throws DuplicateNodeInsertException {
         if (data.compareTo(node.getData()) < 0) {
             if (node.getLeft() == null) {
                 Node<T> newNode = new Node(data);
@@ -270,7 +263,7 @@ public class AVLTree<T extends Comparable<? super T>> {
                 node.setRight(insertR(node.getRight(), data));
             }
         } else {
-            //THROW EXCEPTION PORQUE NODE.DATA == DATA Y NO ACEPTA REPETIDOS
+            throw new DuplicateNodeInsertException("This AVL tree implementation doesn't allow for duplicate nodes.");
         }
 
         if ((node.getLeft() == null) && (node.getRight() != null)) {
@@ -309,7 +302,6 @@ public class AVLTree<T extends Comparable<? super T>> {
 
     private Node<T> leftRotate(Node<T> node) {
         Node<T> aux = node.getRight();
-
         node.setRight(aux.getLeft());
         aux.setLeft(node);
 
