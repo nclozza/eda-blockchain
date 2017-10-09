@@ -220,7 +220,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     public void insert(T data) {
         System.out.println("");
         System.out.println("Voy a insertar: " + data.toString());
-        if (contains(data)) throw new RuntimeException("CANT ADD DOUBLE VALUES");
+        //if (contains(data)) throw new RuntimeException("CANT ADD DOUBLE VALUES");
         if (header != null) {
             header = insertR(header, data);
             if (wasRotated) System.out.println("Tambien rota nodo: " + header.getData().toString());
@@ -230,63 +230,52 @@ public class AVLTree<T extends Comparable<? super T>> {
             wasRotated = false;
             return;
         }
+
         header = new Node<T>(data);
+
+        modifiedNodes.add(header);
+
         System.out.println("Arbol despues de rotar: ");
         preOrder(header);
         System.out.println("");
-        return;
     }
 
     private Node<T> insertR(Node<T> node, T data) {
-        Node<T> aux = node;
         if (data.compareTo(node.getData()) < 0) {
-            if (node.getLeft() == null) node.setLeft(new Node(data));
-            else {
+            if (node.getLeft() == null) {
+                Node<T> newNode = new Node(data);
+
+                node.setLeft(newNode);
+
+                modifiedNodes.add(newNode);     // The new leaf is added to the modifiedNodes list
+                modifiedNodes.add(node);        // Node has a new child, therefore it is also added to modifiedNodes
+            } else {
                 node.setLeft(insertR(node.getLeft(), data));
-                if (height(node.getLeft()) - height(node.getRight()) == 2) {
-                    if (data.compareTo(node.getLeft().getData()) < 0) aux = rightRotate(node);
-                    else aux = doubleRotateWithLeft(node);
-                    wasRotated = true;
-                    System.out.println("ACA ROTO UN NODO: " + node.getData().toString());
-                }
+            }
+        } else if (data.compareTo(node.getData()) > 0){
+            if (node.getRight() == null) {
+                Node<T> newNode = new Node(data);
+
+                node.setRight(newNode);
+
+                modifiedNodes.add(newNode);     // The new leaf is added to the modifiedNodes list
+                modifiedNodes.add(node);        // Node has a new child, therefore it is also added to modifiedNodes
+            } else {
+                node.setRight(insertR(node.getRight(), data));
             }
         } else {
-            if (node.getRight() == null) node.setRight(new Node<T>(data));
-            else {
-                node.setRight(insertR(node.getRight(), data));
-                if (height(node.getRight()) - height(node.getLeft()) == 2) {
-                    if (data.compareTo(node.getRight().getData()) > 0) aux = leftRotate(node);
-                    else aux = doubleRotateWithRight(node);
-                    System.out.println("ACA ROTO UN NODO: " + node.getData().toString());
-                    wasRotated = true;
-
-                }
-            }
+            //THROW EXCEPTION PORQUE NODE.DATA == DATA Y NO ACEPTA REPETIDOS
         }
-        if ((node.getLeft() == null) && (node.getRight() != null))
+
+        if ((node.getLeft() == null) && (node.getRight() != null)) {
             node.setHeight(node.getRight().getHeight() + 1);
-        else if ((node.getRight() == null) && (node.getLeft() != null))
+        } else if ((node.getRight() == null) && (node.getLeft() != null)) {
             node.setHeight(node.getLeft().getHeight() + 1);
-        else
+        } else {
             node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
+        }
 
-        return aux;
-    }
-
-    public Node<T> doubleRotateWithLeft(Node<T> node) {
-        Node<T> auxN;
-        System.out.println("ACA ROTO UN NODO: " + node.getLeft().getData().toString());
-        node.setLeft(leftRotate(node.getLeft()));
-        auxN = rightRotate(node);
-        return auxN;
-    }
-
-    public Node<T> doubleRotateWithRight(Node<T> node) {
-        Node<T> auxN;
-        System.out.println("ACA ROTO UN NODO: " + node.getRight().getData().toString());
-        node.setRight(rightRotate(node.getRight()));
-        auxN = leftRotate(node);
-        return auxN;
+        return node;
     }
 
     private Node<T> rightRotate(Node<T> node) {
