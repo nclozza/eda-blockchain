@@ -31,8 +31,7 @@ public class Node<T> {
         return this.left;
     }
 
-    public void setRight(Node<T> node) {
-        this.right = node;
+    public void setRight(Node<T> node) {this.right = node;
     }
 
     public void setLeft(Node<T> node) {
