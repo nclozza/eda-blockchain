@@ -80,8 +80,8 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return Null if a leaf has been deleted
      *         Balance of new tree otherwise
      */
-    public void delete(T data) {
-        header = deleteR(data, header);
+    public boolean delete(T data) {
+        return deleteR(data, header) != null;
     }
 
     /**
@@ -108,10 +108,12 @@ public class AVLTree<T extends Comparable<? super T>> {
 
             } else if (leftChild == null) {
                 System.out.println("Removing a node with a right child");
+                node = null;
                 return rightChild;
 
             } else if (rightChild == null) {
                 System.out.println("Removing a node with a left child");
+                node = null;
                 return leftChild;
 
             } else {
@@ -131,11 +133,23 @@ public class AVLTree<T extends Comparable<? super T>> {
 
             }
         } else if (data.compareTo(currentData) < 0) {
-            System.out.println("Traversing to the left ---");
+            System.out.println("Traversing to the left —-");
+
+            Node<T> auxLeftChild = leftChild;
             node.setLeft(deleteR(data, leftChild));
+
+            if (node.getLeft() != null && auxLeftChild.getData().compareTo(node.getLeft().getData()) != 0) {
+                modifiedNodes.add(node);
+            }
         } else {
-            System.out.println("Traversing to the right ---");
+            System.out.println("Traversing to the right —-");
+
+            Node<T> auxRightChild = rightChild;
             node.setRight(deleteR(data, rightChild));
+
+            if (node.getRight() != null && auxRightChild.getData().compareTo(node.getRight().getData()) != 0) {
+                modifiedNodes.add(node);
+            }
         }
 
         // Update the height parameter
@@ -143,7 +157,7 @@ public class AVLTree<T extends Comparable<? super T>> {
         System.out.println(height(node));
 
         // Check on every delete operation whether tree has become unbalanced
-        return balanceTreeAfterDeletion(node);
+        return balanceTree(node);
     }
 
 
@@ -167,7 +181,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @param currentNode Header
      * @return Tree balanced
      */
-    private Node<T> balanceTreeAfterDeletion(Node<T> currentNode) {
+    private Node<T> balanceTree(Node<T> currentNode) {
         int balanceValue = getBalance(currentNode);
         // Left heavy situation. Can be left-left or left-right
         if (balanceValue > 1) {
@@ -274,8 +288,7 @@ public class AVLTree<T extends Comparable<? super T>> {
         } else {
             node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
         }
-
-        return node;
+        return balanceTree(node);
     }
 
     private Node<T> rightRotate(Node<T> node) {
