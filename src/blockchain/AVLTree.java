@@ -1,7 +1,6 @@
 package blockchain;
 
 
-import javax.naming.NameNotFoundException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -16,6 +15,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     modifiedFields.get(key).
     ITS NOT IMPLEMENTED AS FUNCTIONAL YET
      */
+    private LinkedList<Node<T>> modifiedNodes = new LinkedList<>();
 
     public AVLTree(T data) {
         header = new Node<T>(data);
@@ -71,7 +71,6 @@ public class AVLTree<T extends Comparable<? super T>> {
         } else if (data.compareTo(node.getData()) > 0){
             return lookUpR(data, node.getRight());
         }
-
         return modifiedFields.get(data);
     }
 
@@ -81,8 +80,8 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return Null if a leaf has been deleted
      *         Balance of new tree otherwise
      */
-    public boolean delete(T data) {
-        return deleteR(data, header) != null;
+    public void delete(T data) {
+        header = deleteR(data, header);
     }
 
     /**
@@ -92,7 +91,9 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return Header after deletion, balanced
      */
     private Node<T> deleteR(T data, Node<T> node) {
-        if (node == null) return null;
+        if (node == null)
+            return null;
+
         Node<T> leftChild = node.getLeft();
         Node<T> rightChild = node.getRight();
         T currentData = node.getData();
@@ -104,21 +105,27 @@ public class AVLTree<T extends Comparable<? super T>> {
             if (leftChild == null && rightChild == null) {
                 System.out.println("Removing a leaf node");
                 return null;
+
             } else if (leftChild == null) {
                 System.out.println("Removing a node with a right child");
-                node = null;
                 return rightChild;
+
             } else if (rightChild == null) {
                 System.out.println("Removing a node with a left child");
-                node = null;
                 return leftChild;
+
             } else {
-                System.out.println("Removing a node with two children");
+                System.out.println("find largest node left subtree");
                 // Find the largest node on the left sub-tree
                 Node<T> largestInLeftSubtree = getMaxNode(leftChild);
+                System.out.println(largestInLeftSubtree);
 
+                System.out.println("swap root node");
                 // Swap the root node with the largest in left sub-tree
                 node.setData(largestInLeftSubtree.getData());
+
+                System.out.println("set left child recursively");
+
                 // Set left-child recursively. Remove the copy left of the largest left child
                 node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
 
@@ -133,16 +140,26 @@ public class AVLTree<T extends Comparable<? super T>> {
 
         // Update the height parameter
         node.setHeight(height(node));
+        System.out.println(height(node));
 
         // Check on every delete operation whether tree has become unbalanced
         return balanceTreeAfterDeletion(node);
     }
 
+
     private Node<T> getMaxNode(Node<T> node) {
-        if (height(node.getLeft()) > height(node.getRight())) {
-            return node.getLeft();
-        }
-        return node.getRight();
+       return getMaxNodeR(node);
+    }
+
+    private Node<T> getMaxNodeR(Node<T> node){
+
+        if (node.getRight() == null && node.getLeft() != null)
+            return node;
+
+        else if (node.getLeft() == null && node.getRight()!= null)
+            return getMaxNodeR(node.getRight());
+
+        return node;
     }
 
     /**
@@ -227,8 +244,8 @@ public class AVLTree<T extends Comparable<? super T>> {
             else {
                 node.setLeft(insertR(node.getLeft(), data));
                 if (height(node.getLeft()) - height(node.getRight()) == 2) {
-                    if (data.compareTo(node.getLeft().getData()) < 0) aux = leftRotate(node);
-                    else aux = doublerotatewithleft(node);
+                    if (data.compareTo(node.getLeft().getData()) < 0) aux = rightRotate(node);
+                    else aux = doubleRotateWithLeft(node);
                     wasRotated = true;
                     System.out.println("ACA ROTO UN NODO: " + node.getData().toString());
                 }
@@ -238,8 +255,8 @@ public class AVLTree<T extends Comparable<? super T>> {
             else {
                 node.setRight(insertR(node.getRight(), data));
                 if (height(node.getRight()) - height(node.getLeft()) == 2) {
-                    if (data.compareTo(node.getRight().getData()) > 0) aux = rightRotate(node);
-                    else aux = doublerotatewithright(node);
+                    if (data.compareTo(node.getRight().getData()) > 0) aux = leftRotate(node);
+                    else aux = doubleRotateWithRight(node);
                     System.out.println("ACA ROTO UN NODO: " + node.getData().toString());
                     wasRotated = true;
 
@@ -256,54 +273,72 @@ public class AVLTree<T extends Comparable<? super T>> {
         return aux;
     }
 
-    public Node<T> doublerotatewithleft(Node<T> node) {
+    public Node<T> doubleRotateWithLeft(Node<T> node) {
         Node<T> auxN;
         System.out.println("ACA ROTO UN NODO: " + node.getLeft().getData().toString());
-        node.setLeft(rightRotate(node.getLeft()));
-        auxN = leftRotate(node);
-        return auxN;
-    }
-
-    public Node<T> doublerotatewithright(Node<T> node) {
-        Node<T> auxN;
-        System.out.println("ACA ROTO UN NODO: " + node.getRight().getData().toString());
-        node.setRight(leftRotate(node.getRight()));
+        node.setLeft(leftRotate(node.getLeft()));
         auxN = rightRotate(node);
         return auxN;
     }
 
-    private Node<T> leftRotate(Node<T> node) {
-//        System.out.println("Arbol antes de rotar a la izquierda:");
-//        preOrder(header);
-//        System.out.println("");
-        Node<T> aux = node.getLeft();
-        System.out.println("Aca roto un nodo: " + aux.getData().toString());
-        node.setLeft(aux.getRight());
-        aux.setRight(node);
-        if (node.getLeft() != null)
-            System.out.println("Aca roto un nodo: " + node.getLeft().getData().toString());
-
-
-        node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
-        aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight())) + 1);
-        System.out.println("");
-        return aux;
+    public Node<T> doubleRotateWithRight(Node<T> node) {
+        Node<T> auxN;
+        System.out.println("ACA ROTO UN NODO: " + node.getRight().getData().toString());
+        node.setRight(rightRotate(node.getRight()));
+        auxN = leftRotate(node);
+        return auxN;
     }
 
     private Node<T> rightRotate(Node<T> node) {
 //        System.out.println("Arbol antes de rotar a la derecha:");
 //        preOrder(header);
 //        System.out.println("");
+        Node<T> aux = node.getLeft();
+        System.out.println("Aca roto un nodo a la derecha: " + aux.getData().toString());
+        node.setLeft(aux.getRight());
+        aux.setRight(node);
+        if (node.getLeft() != null)
+            System.out.println("Aca roto un nodo a la derecha: " + node.getLeft().getData().toString());
+
+        if (node.getData().compareTo(header.getData()) == 0)
+            header = aux;
+
+        if (!modifiedNodes.contains(node))
+            modifiedNodes.add(node);
+
+        if (!modifiedNodes.contains(aux))
+            modifiedNodes.add(aux);
+
+        node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
+        aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight())) + 1);
+
+        System.out.println("");
+        return aux;
+    }
+
+    private Node<T> leftRotate(Node<T> node) {
+//        System.out.println("Arbol antes de rotar a la izquierda:");
+//        preOrder(header);
+//        System.out.println("");
         Node<T> aux = node.getRight();
-        System.out.println("Aca roto un nodo: " + aux.getData().toString());
+        System.out.println("Aca roto un nodoa la izquierda: " + aux.getData().toString());
         node.setRight(aux.getLeft());
         if (node.getRight() != null)
-            System.out.println("Aca roto un nodo: " + node.getRight().getData().toString());
+            System.out.println("Aca roto un nodo a la izquierda: " + node.getRight().getData().toString());
         aux.setLeft(node);
 
+        if (node.getData().compareTo(header.getData()) == 0)
+            header = aux;
+
+        if (!modifiedNodes.contains(node))
+            modifiedNodes.add(node);
+
+        if (!modifiedNodes.contains(aux))
+            modifiedNodes.add(aux);
 
         node.setHeight(Math.max(height(node.getLeft()), height(node.getRight()) + 1));
         aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight()) + 1));
+
         System.out.println("");
         return aux;
     }
