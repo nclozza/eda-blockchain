@@ -49,10 +49,9 @@ public class AVLTree<T extends Comparable<? super T>> {
     private boolean containsR(T x, Node<T> node) {
         if (node == null){
             return false; // The node was not found
-
-        } else if (x.compareTo(node.getData()) < 0){
+        } else if (x.compareTo(node.getData()) < 0) {
             return containsR(x, node.getLeft());
-        } else if (x.compareTo(node.getData()) > 0){
+        } else if (x.compareTo(node.getData()) > 0) {
             return containsR(x, node.getRight());
         }
 
@@ -64,13 +63,16 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     private LinkedList<Integer> lookUpR(T data, Node<T> node) {
-        if (node == null) return null;
+        if (node == null) {
+            return null;
+        }
 
         if (data.compareTo(node.getData()) < 0){
             return lookUpR(data, node.getLeft());
         } else if (data.compareTo(node.getData()) > 0){
             return lookUpR(data, node.getRight());
         }
+
         return modifiedFields.get(data);
     }
 
@@ -91,69 +93,60 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return Header after deletion, balanced
      */
     private Node<T> deleteR(T data, Node<T> node) {
-        if (node == null)
+        if (node == null) {
+            //throw new NodeNotFoundException
             return null;
+        }
 
         Node<T> leftChild = node.getLeft();
         Node<T> rightChild = node.getRight();
         T currentData = node.getData();
 
         if (data.compareTo(currentData) == 0) {
-
-            System.out.println("Found the data that we want to remove: " + currentData);
-
             if (leftChild == null && rightChild == null) {
-                System.out.println("Removing a leaf node");
-                if (node == header) header = null;
-                return null;
+                if (node == header) {
+                    header = null;
+                }
 
+                return null;
             } else if (leftChild == null) {
-                System.out.println("Removing a node with a right child");
-                if (node == header) header = rightChild;
+                if (node == header) {
+                    header = rightChild;
+                }
+
                 return header;
             } else if (rightChild == null) {
-                System.out.println("Removing a node with a left child");
-                if (node == header) header = leftChild;
+                if (node == header) {
+                    header = leftChild;
+                }
+
                 return header;
             } else {
-                System.out.println("find largest node left subtree");
-                // Find the largest node on the left sub-tree
                 Node<T> largestInLeftSubtree = getMaxNode(leftChild);
-                System.out.println(largestInLeftSubtree);
 
-                System.out.println("swap root node");
-                // Swap the root node with the largest in left sub-tree
                 node.setData(largestInLeftSubtree.getData());
 
-                System.out.println("set left child recursively");
-
-                // Set left-child recursively. Remove the copy left of the largest left child
                 node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
 
             }
         } else if (data.compareTo(currentData) < 0) {
-            System.out.println("Traversing to the left —-");
-
             Node<T> auxLeftChild = leftChild;
             node.setLeft(deleteR(data, leftChild));
 
-            if (node.getLeft() != null && auxLeftChild.getData().compareTo(node.getLeft().getData()) != 0) {
+            if (node.getLeft() == null || auxLeftChild.getData().compareTo(node.getLeft().getData()) != 0) {
                 modifiedNodes.add(node);
             }
         } else {
-            System.out.println("Traversing to the right —-");
-
             Node<T> auxRightChild = rightChild;
             node.setRight(deleteR(data, rightChild));
 
-            if (node.getRight() != null && auxRightChild.getData().compareTo(node.getRight().getData()) != 0) {
+            if (node.getRight() == null || auxRightChild.getData().compareTo(node.getRight().getData()) != 0) {
                 modifiedNodes.add(node);
             }
         }
 
         // Update the height parameter
         node.setHeight(height(node));
-        System.out.println(height(node));
 
         // Check on every delete operation whether tree has become unbalanced
         return balanceTree(node);
@@ -164,13 +157,14 @@ public class AVLTree<T extends Comparable<? super T>> {
        return getMaxNodeR(node);
     }
 
-    private Node<T> getMaxNodeR(Node<T> node){
-
-        if (node.getRight() == null && node.getLeft() != null)
+    private Node<T> getMaxNodeR(Node<T> node) {
+        if (node.getRight() == null && node.getLeft() != null) {
             return node;
+        }
 
-        else if (node.getLeft() == null && node.getRight()!= null)
+        else if (node.getLeft() == null && node.getRight()!= null) {
             return getMaxNodeR(node.getRight());
+        }
 
         return node;
     }
@@ -188,6 +182,7 @@ public class AVLTree<T extends Comparable<? super T>> {
             if (getBalance(currentNode.getLeft()) < 0) {
                 currentNode.setLeft(leftRotate(currentNode.getLeft()));
             }
+
             return rightRotate(currentNode);
         }
         // Right heavy situation. Can be right-right or right-left
@@ -206,13 +201,17 @@ public class AVLTree<T extends Comparable<? super T>> {
     public void byLevel(Node<T> root) {
         Queue<Node> level = new LinkedList<>();
         level.add(root);
+
         while (!level.isEmpty()) {
             Node node = level.poll();
             System.out.print(node.getData().toString() + " ");
-            if (node.getLeft() != null)
+            if (node.getLeft() != null) {
                 level.add(node.getLeft());
-            if (node.getRight() != null)
+            }
+
+            if (node.getRight() != null) {
                 level.add(node.getRight());
+            }
         }
     }
 
@@ -236,21 +235,15 @@ public class AVLTree<T extends Comparable<? super T>> {
         //if (contains(data)) throw new RuntimeException("CANT ADD DOUBLE VALUES");
         if (header != null) {
             header = insertR(header, data);
-            if (wasRotated) System.out.println("Tambien rota nodo: " + header.getData().toString());
-            System.out.println("Arbol despues de rotar: ");
-            preOrder(header);
-            System.out.println("");
+
             wasRotated = false;
+
             return;
         }
 
         header = new Node<T>(data);
 
         modifiedNodes.add(header);
-
-        System.out.println("Arbol despues de rotar: ");
-        preOrder(header);
-        System.out.println("");
     }
 
     private Node<T> insertR(Node<T> node, T data) {
@@ -265,7 +258,7 @@ public class AVLTree<T extends Comparable<? super T>> {
             } else {
                 node.setLeft(insertR(node.getLeft(), data));
             }
-        } else if (data.compareTo(node.getData()) > 0){
+        } else if (data.compareTo(node.getData()) > 0) {
             if (node.getRight() == null) {
                 Node<T> newNode = new Node(data);
 
@@ -287,74 +280,69 @@ public class AVLTree<T extends Comparable<? super T>> {
         } else {
             node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
         }
+
         return balanceTree(node);
     }
 
     private Node<T> rightRotate(Node<T> node) {
-//        System.out.println("Arbol antes de rotar a la derecha:");
-//        preOrder(header);
-//        System.out.println("");
         Node<T> aux = node.getLeft();
-        System.out.println("Aca roto un nodo a la derecha: " + aux.getData().toString());
         node.setLeft(aux.getRight());
         aux.setRight(node);
-        if (node.getLeft() != null)
-            System.out.println("Aca roto un nodo a la derecha: " + node.getLeft().getData().toString());
 
-        if (node.getData().compareTo(header.getData()) == 0)
+        if (node.getData().compareTo(header.getData()) == 0) {
             header = aux;
+        }
 
-        if (!modifiedNodes.contains(node))
+        if (!modifiedNodes.contains(node)) {
             modifiedNodes.add(node);
+        }
 
-        if (!modifiedNodes.contains(aux))
+        if (!modifiedNodes.contains(aux)) {
             modifiedNodes.add(aux);
+        }
 
         node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
         aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight())) + 1);
 
-        System.out.println("");
         return aux;
     }
 
     private Node<T> leftRotate(Node<T> node) {
-//        System.out.println("Arbol antes de rotar a la izquierda:");
-//        preOrder(header);
-//        System.out.println("");
         Node<T> aux = node.getRight();
-        System.out.println("Aca roto un nodoa la izquierda: " + aux.getData().toString());
+
         node.setRight(aux.getLeft());
-        if (node.getRight() != null)
-            System.out.println("Aca roto un nodo a la izquierda: " + node.getRight().getData().toString());
         aux.setLeft(node);
 
-        if (node.getData().compareTo(header.getData()) == 0)
+        if (node.getData().compareTo(header.getData()) == 0) {
             header = aux;
+        }
 
-        if (!modifiedNodes.contains(node))
+        if (!modifiedNodes.contains(node)) {
             modifiedNodes.add(node);
+        }
 
-        if (!modifiedNodes.contains(aux))
+        if (!modifiedNodes.contains(aux)) {
             modifiedNodes.add(aux);
+        }
 
         node.setHeight(Math.max(height(node.getLeft()), height(node.getRight()) + 1));
         aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight()) + 1));
 
-        System.out.println("");
         return aux;
     }
 
-    int getBalance(Node<T> N) {
-        if (N == null)
+    int getBalance(Node<T> node) {
+        if (node == null) {
             return 0;
+        }
 
-        return height(N.getLeft()) - height(N.getRight());
+        return height(node.getLeft()) - height(node.getRight());
     }
 
-    int height(Node<T> N) {
-        if (N == null)
+    int height(Node<T> node) {
+        if (node == null)
             return -1;
 
-        return N.getHeight();
+        return node.getHeight();
     }
 }
