@@ -104,18 +104,17 @@ public class AVLTree<T extends Comparable<? super T>> {
 
             if (leftChild == null && rightChild == null) {
                 System.out.println("Removing a leaf node");
+                if (node == header) header = null;
                 return null;
 
             } else if (leftChild == null) {
                 System.out.println("Removing a node with a right child");
-                node = null;
-                return rightChild;
-
+                if (node == header) header = rightChild;
+                return header;
             } else if (rightChild == null) {
                 System.out.println("Removing a node with a left child");
-                node = null;
-                return leftChild;
-
+                if (node == header) header = leftChild;
+                return header;
             } else {
                 System.out.println("find largest node left subtree");
                 // Find the largest node on the left sub-tree

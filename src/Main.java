@@ -5,14 +5,20 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import blockchain.ConsoleReader;
+import visual.BinaryTreeView;
 
 public class Main {
 
   private static final String EXIT_COMMAND = "exit";
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
 
     String input;
+
+    AVLTree<Integer> t = new AVLTree();
+    t.insert(5);
+
+    BinaryTreeView<Integer> btv = new BinaryTreeView<>(t.getRoot(),800, 600 );
 
     try {
       System.out.println("Enter some text, or '" + EXIT_COMMAND + "' to quit");
@@ -25,6 +31,7 @@ public class Main {
           System.out.println("Agregaste un elemento");
           Integer aux = Integer.parseInt(input.substring(4));
           System.out.println("Voy a agregar este nodo: " + aux);
+          t.insert(aux);
         } else if (input.matches("^(lookup\\s\\d*)$")) {
           System.out.println("Buscaste un elemento");
           Integer aux = Integer.parseInt(input.substring(7));
@@ -33,7 +40,7 @@ public class Main {
           System.out.println("Borraste un elemento");
           Integer aux = Integer.parseInt(input.substring(7));
           System.out.println("Borraste este nodo: " + aux);
-
+          t.delete(aux);
         } else if (input.matches("^(zeros\\s\\d*)$")) {
           System.out.println("Seteaste los zeros");
           Integer aux = Integer.parseInt(input.substring(6));
@@ -47,10 +54,12 @@ public class Main {
 
         } else if (input.matches("^(exit)$")) {
           System.out.println("Nos vemos");
+
           break;
         } else {
           System.out.println("Horrible input");
         }
+        btv.refresh(t.getRoot());
       }
     } catch (IOException e) {
       System.out.println("Exception has been thrown");
