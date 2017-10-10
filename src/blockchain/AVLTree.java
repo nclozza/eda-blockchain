@@ -1,225 +1,416 @@
 package blockchain;
 
-
-import com.sun.org.apache.bcel.internal.generic.DUP;
-
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class AVLTree<T extends Comparable<? super T>> {
-
-    private Node<T> header;
-    private boolean wasRotated = false;
-    private HashMap<T, LinkedList<Integer>> modifiedFields = null;
-    /* Key = T = We use the data of the node as a key, if some operation modifies it, we add
-    the block's index as a value, so when we do lookUp method we just need to return
-    modifiedFields.get(key).
-    ITS NOT IMPLEMENTED AS FUNCTIONAL YET
+    /**
+     * The header represents the root of the tree.
      */
-    private LinkedList<Node<T>> modifiedNodes = new LinkedList<>();
+    private Node<T> header;
 
+    /**
+     * The modifiedNodesList is a list containing all the nodes that were modified by the last operation upon the tree.
+     * The list will start with a null reference meaning that the tree is empty. It can be accessed by the
+     * getModifiedNodesList method.
+     */
+    private LinkedList<Node<T>> modifiedNodesList = null;
+
+    /**
+     * Creates an instance of the AVLTree class which should represent an AVL tree. Said instance has the specified data
+     * as the header's value by default. The header works as a general reference for this implementation and as the root
+     * node of the AVL tree.
+     * @param data  Data to be contained by the header
+     */
     public AVLTree(T data) {
         header = new Node<T>(data);
     }
 
+    /**
+     * Creates an instance of the AVLTree class which should represent an AVL tree. Said instance has a null header,
+     * this means that the tree is empty and there is no root yet.
+     */
     public AVLTree() {
         header = null;
     }
 
+    /**
+     * Getter function for the root node of the AVL tree.
+     * @return  The root node, in this case the header.
+     */
     public Node<T> getRoot() {
         return header;
     }
 
     /**
-     * This is a temporary implementation, we need to change this
+     * Calculates the height of a given node. A node's height is a private field in the class' definition.
+     * @param node Node whose height is to be calculated.
+     * @return  The height of the specified node.
      */
-    public String toStringForHash() {
-        return this.toString();
-    }
+    int height(Node<T> node) {
+        if (node == null)
+            return -1;
 
-    public boolean contains(T x){
-        return containsR(x, header);
+        return node.getHeight();
     }
 
     /**
-     *
-     * @param x Element to find
-     * @param node Root of the tree
-     * @return True if the element is found, false otherwise
+     * Looks for a node containing the specified data calling the recursive function containsR.
+     * @param data  Data to be found contained in a node.
+     * @return  True if the node containing the data is found, false otherwise.
      */
-    private boolean containsR(T x, Node<T> node) {
-        if (node == null){
-            return false; // The node was not found
+    public boolean contains(T data){
+        return containsR(data, header);
+    }
 
-        } else if (x.compareTo(node.getData()) < 0){
-            return containsR(x, node.getLeft());
-        } else if (x.compareTo(node.getData()) > 0){
-            return containsR(x, node.getRight());
+    /**
+     * Looks for a node containing the specified data recursively and returns true if such node could be found, false
+     * otherwise.
+     * @param data  Data to be found contained in a node.
+     * @param node  Node to be use for the search of the specified data.
+     * @return True if the node containing the data is found, false otherwise.
+     */
+    private boolean containsR(T data, Node<T> node) {
+        if (node == null) {
+            return false;
+        } else if (data.compareTo(node.getData()) < 0) {
+            return containsR(data, node.getLeft());
+        } else if (data.compareTo(node.getData()) > 0) {
+            return containsR(data, node.getRight());
         }
 
-        return true; // Can only reach here if node was found
-    }
-
-    public LinkedList<Integer> lookUp(T data){
-        return lookUpR(data, header);
-    }
-
-    private LinkedList<Integer> lookUpR(T data, Node<T> node) {
-        if (node == null) return null;
-
-        if (data.compareTo(node.getData()) < 0){
-            return lookUpR(data, node.getLeft());
-        } else if (data.compareTo(node.getData()) > 0){
-            return lookUpR(data, node.getRight());
-        }
-        return modifiedFields.get(data);
+        return true;
     }
 
     /**
-     * Delete operation. Calls a private recursive method
-     * @param data Element to delete
-     * @return Null if a leaf has been deleted
-     *         Balance of new tree otherwise
+     * Inserts a new node with the specified data. Calls a private recursive insert function to look for the proper
+     * place to insert the new node.
+     * @param data  The data that will be in the new node to be inserted.
+     * @return  The list of nodes that were modified by the insertion.
      */
-    public boolean delete(T data) throws NodeNotFoundException {
-        return deleteR(data, header) != null;
+    public LinkedList<Node<T>> insert(T data) throws DuplicateNodeInsertException {
+        modifiedNodesList = new LinkedList<>();
+
+        if (header == null) {
+            header = new Node<T>(data);
+
+            modifiedNodesList.add(header);
+        } else {
+            header = insertR(header, data);
+        }
+
+        return modifiedNodesList;
     }
 
     /**
-     *
-     * @param data Element to delete
-     * @param node Root of the tree
-     * @return Header after deletion, balanced
+     * Recursive function which looks for the proper place to insert a new node with the specified data in the tree.
+     * @param currentNode   Node that works as a reference to know where to insert the new node.
+     * @param data  The data that will be in the new node to be inserted.
+     * @return  The root/header of the subtree that was affected by the node's insertion.
+     * @throws DuplicateNodeInsertException if there is an attempt to insert a new node with the specified data while
+     *      already having an existing node with such data in the tree.
+     */
+    private Node<T> insertR(Node<T> currentNode, T data) throws DuplicateNodeInsertException {
+        if (data.compareTo(currentNode.getData()) < 0) {
+            if (currentNode.getLeft() == null) {
+                Node<T> newNode = new Node(data);
+
+                currentNode.setLeft(newNode);
+
+                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list
+                modifiedNodesList.add(currentNode);        // Node has a new child, therefore it is also added to modifiedNodesList
+            } else {
+                currentNode.setLeft(insertR(currentNode.getLeft(), data));
+            }
+        } else if (data.compareTo(currentNode.getData()) > 0) {
+            if (currentNode.getRight() == null) {
+                Node<T> newNode = new Node(data);
+
+                currentNode.setRight(newNode);
+
+                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list
+                modifiedNodesList.add(currentNode);        // Node has a new child, therefore it is also added to modifiedNodesList
+            } else {
+                currentNode.setRight(insertR(currentNode.getRight(), data));
+            }
+        } else {
+            throw new DuplicateNodeInsertException("This AVL tree implementation does not allow for duplicate nodes.");
+        }
+
+        // Update the modified currentNodes' heights.
+        if ((currentNode.getLeft() == null) && (currentNode.getRight() != null)) {
+            currentNode.setHeight(currentNode.getRight().getHeight() + 1);
+        } else if ((currentNode.getRight() == null) && (currentNode.getLeft() != null)) {
+            currentNode.setHeight(currentNode.getLeft().getHeight() + 1);
+        } else {
+            currentNode.setHeight(Math.max(height(currentNode.getLeft()), height(currentNode.getRight())) + 1);
+        }
+
+        return balanceTree(currentNode);
+    }
+
+    /**
+     * Delete operation. Calls a private recursive method to delete the node containing the specified data.
+     * @param data  Data contained by the node to be deleted.
+     * @return  The list of nodes that were modified by the deletion.
+     *          only node in the tree and it was deleted.
+     */
+    public LinkedList<Node<T>> delete(T data) throws NodeNotFoundException {
+        modifiedNodesList = new LinkedList<>();
+
+        deleteR(data, header);
+
+        return modifiedNodesList;
+    }
+
+    /**
+     * Recursive function responsible of finding a node with the specified data and deleting it through the
+     * deleteFoundNode() function. After having deleted the node it will set the new height and balance the subtree from
+     * where the node was deleted until the root is reached.
+     * @param data  The data of the node to be deleted.
+     * @param node  The current node whose data is to be compared with the specified data to check if it is to be deleted.
+     * @return  A new balanced tree that doesn't contain any nodes with the specified data.
+     * @throws NodeNotFoundException if there isn't an existing node containing the specified data.
      */
     private Node<T> deleteR(T data, Node<T> node) throws NodeNotFoundException {
         if (node == null) {
-            throw new NodeNotFoundException("The node with the specified data doesn't exist in the tree.");
+            throw new NodeNotFoundException("The node with the specified data does not exist in the tree.");
         }
 
         Node<T> leftChild = node.getLeft();
         Node<T> rightChild = node.getRight();
         T currentData = node.getData();
 
-        if (data.compareTo(currentData) == 0) {
-
-            System.out.println("Found the data that we want to remove: " + currentData);
-
-            if (leftChild == null && rightChild == null) {
-                System.out.println("Removing a leaf node");
-                if (node == header) header = null;
-                return null;
-
-            } else if (leftChild == null) {
-                System.out.println("Removing a node with a right child");
-                if (node == header) header = rightChild;
-                return header;
-            } else if (rightChild == null) {
-                System.out.println("Removing a node with a left child");
-                if (node == header) header = leftChild;
-                return header;
-            } else {
-                System.out.println("find largest node left subtree");
-                // Find the largest node on the left sub-tree
-                Node<T> largestInLeftSubtree = getMaxNode(leftChild);
-                System.out.println(largestInLeftSubtree);
-
-                System.out.println("swap root node");
-                // Swap the root node with the largest in left sub-tree
-                node.setData(largestInLeftSubtree.getData());
-
-                System.out.println("set left child recursively");
-
-                // Set left-child recursively. Remove the copy left of the largest left child
-                node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
-
-            }
-        } else if (data.compareTo(currentData) < 0) {
-            System.out.println("Traversing to the left —-");
-
-            Node<T> auxLeftChild = leftChild;
+        if (data.compareTo(currentData) < 0) {
             node.setLeft(deleteR(data, leftChild));
 
-            if (node.getLeft() != null && auxLeftChild.getData().compareTo(node.getLeft().getData()) != 0) {
-                modifiedNodes.add(node);
+            if (node.getLeft() == null || leftChild.getData().compareTo(node.getLeft().getData()) != 0) {
+                modifiedNodesList.add(node);
             }
-        } else {
-            System.out.println("Traversing to the right —-");
-
-            Node<T> auxRightChild = rightChild;
+        } else if (data.compareTo(currentData) > 0) {
             node.setRight(deleteR(data, rightChild));
 
-            if (node.getRight() != null && auxRightChild.getData().compareTo(node.getRight().getData()) != 0) {
-                modifiedNodes.add(node);
+            if (node.getRight() == null || rightChild.getData().compareTo(node.getRight().getData()) != 0) {
+                modifiedNodesList.add(node);
+            }
+        } else {
+            node = deleteFoundNode(node);
+
+            if (node == null) {
+                return null;
             }
         }
 
-        // Update the height parameter
+        // Update the height parameter.
         node.setHeight(height(node));
-        System.out.println(height(node));
 
-        // Check on every delete operation whether tree has become unbalanced
+        // Check on every delete operation whether tree has become unbalanced.
         return balanceTree(node);
     }
 
+    /**
+     * Performs the actual deletion of the node unlike delete or deleteR which are wrappers. The deletion consists of
+     * replacing the given node with a children or the highest valued descendant of its left subtree.
+     * @param node  The node to be replaced by one of its children or the highest valued descendant of its left subtree
+     *              if it were to have both children.
+     * @return  The replacement for the specified node which is to be deleted. The replacement could be null if it had
+     *          no children, one if its children if it only had one or the highest valued descendant of its left subtree
+     *          if it had both children.
+     * @throws NodeNotFoundException if there isn't an existing node containing the specified data, which in this case
+     *         won't happen because the node to be deleted is the old copy of the replacement node.
+     */
+    private Node<T> deleteFoundNode(Node<T> node) throws NodeNotFoundException {
+        if (node.getLeft() == null && node.getRight() == null) {
+            if (node == header) {
+                header = null;
+            }
 
-    private Node<T> getMaxNode(Node<T> node) {
-       return getMaxNodeR(node);
-    }
+            return null;
+        } else if (node.getLeft() == null) {
+            if (node == header) {
+                header = node.getRight();
+            }
 
-    private Node<T> getMaxNodeR(Node<T> node){
+            return node.getRight();
+        } else if (node.getRight() == null) {
+            if (node == header) {
+                header = node.getLeft();
+            }
 
-        if (node.getRight() == null && node.getLeft() != null)
-            return node;
+            return node.getLeft();
+        }
 
-        else if (node.getLeft() == null && node.getRight()!= null)
-            return getMaxNodeR(node.getRight());
+        // In this case the node has two children, the largest descendant in its left subtree is chosen to replace it.
+        Node<T> largestInLeftSubtree = getMaxNode(node.getLeft());
+
+        node.setData(largestInLeftSubtree.getData());
+        node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
 
         return node;
     }
 
     /**
-     * Balances the new tree after deletion of an element
-     * @param currentNode Header
-     * @return Tree balanced
+     * Function to get the highest valued node from the subtree of which the specified node is the root/header.
+     * @param root  The root from which to start the search for the highest valued node in the subtree.
+     * @return  The highest valued node in the subtree.
      */
-    private Node<T> balanceTree(Node<T> currentNode) {
-        int balanceValue = getBalance(currentNode);
-        // Left heavy situation. Can be left-left or left-right
-        if (balanceValue > 1) {
-            // Left-right rotation required. Left rotation on the right child of the root node.
-            if (getBalance(currentNode.getLeft()) < 0) {
-                currentNode.setLeft(leftRotate(currentNode.getLeft()));
-            }
-            return rightRotate(currentNode);
+    private Node<T> getMaxNode(Node<T> root) {
+        Node<T> currentNode = root;
+
+        while (currentNode.getRight() != null) {
+            currentNode = currentNode.getRight();
         }
-        // Right heavy situation. Can be right-right or right-left
-        if (balanceValue < -1) {
-            // right - left situation. Left rotation on the right child of the root node.
-            if (getBalance(currentNode.getRight()) > 0) {
-                currentNode.setRight(rightRotate(currentNode.getRight()));
-            }
-            // left rotation on the root node
-            return leftRotate(currentNode);
-        }
+
         return currentNode;
     }
 
-    //just to test
+    /**
+     * Calculates the balancing factor of a specified node. The balancing factor of a node is the height difference
+     * between its left child and its right child in that order. If the subtree that had the specified node as its
+     * root/header was balanced, its balancing factor would be one of these values {-1, 0, 1} depending on its left and
+     * right children's heights. If it was not balanced then the value would be an integer different from those
+     * specified previously, also depending on its left and right children's heights. If the AVL tree were properly
+     * balanced after each insertion or deletion, every node that is not balanced should have -2 or 2 as its balancing
+     * factor.
+     * @param node  Node whose balancing factor is to be calculated.
+     * @return  Balancing factor of the specified node.
+     */
+    private int getBalance(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+
+        return height(node.getLeft()) - height(node.getRight());
+    }
+
+    /**
+     * Balances the tree leaving a height difference between all leafs of 1 or -1 at most.
+     * @param currentNode Header node of the subtree.
+     * @return Header node of the balanced subtree.
+     */
+    private Node<T> balanceTree(Node<T> currentNode) {
+        int balanceValue = getBalance(currentNode);
+
+        // Left heavy situation. Can be left-left or left-right.
+        if (balanceValue > 1) {
+            // Left-right situation. Left rotation on the right child of the root node and the right child itself.
+            if (getBalance(currentNode.getLeft()) < 0) {
+                currentNode.setLeft(leftRotate(currentNode.getLeft()));
+            }
+
+            return rightRotate(currentNode);
+        }
+
+        // Right heavy situation. Can be right-right or right-left.
+        if (balanceValue < -1) {
+            // Right-left situation. Right rotation on the left child of the root node and the left child itself.
+            if (getBalance(currentNode.getRight()) > 0) {
+                currentNode.setRight(rightRotate(currentNode.getRight()));
+            }
+
+            return leftRotate(currentNode);
+        }
+
+        return currentNode;
+    }
+
+    /**
+     * Makes a right rotation upon the subtree of which the specified node is the root/header.
+     * @param node  Node which is to be rotated to the right.
+     * @return  The new root/header of the previously rotated subtree.
+     */
+    private Node<T> rightRotate(Node<T> node) {
+        Node<T> aux = node.getLeft();
+
+        node.setLeft(aux.getRight());
+        aux.setRight(node);
+
+        if (node.getData().compareTo(header.getData()) == 0) {
+            header = aux;
+        }
+
+        if (!modifiedNodesList.contains(node)) {
+            modifiedNodesList.add(node);
+        }
+
+        if (!modifiedNodesList.contains(aux)) {
+            modifiedNodesList.add(aux);
+        }
+
+        // Update the modified nodes' heights.
+        node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
+        aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight())) + 1);
+
+        return aux;
+    }
+
+    /**
+     * Makes a left rotation upon the subtree of which the specified node is the root/header.
+     * @param node  Node which is to be rotated to the left.
+     * @return  The new root/header of the previously rotated subtree.
+     */
+    private Node<T> leftRotate(Node<T> node) {
+        Node<T> aux = node.getRight();
+
+        node.setRight(aux.getLeft());
+        aux.setLeft(node);
+
+        if (node.getData().compareTo(header.getData()) == 0) {
+            header = aux;
+        }
+
+        if (!modifiedNodesList.contains(node)) {
+            modifiedNodesList.add(node);
+        }
+
+        if (!modifiedNodesList.contains(aux)) {
+            modifiedNodesList.add(aux);
+        }
+
+        // Update the modified nodes' heights.
+        node.setHeight(Math.max(height(node.getLeft()), height(node.getRight()) + 1));
+        aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight()) + 1));
+
+        return aux;
+    }
+
+    /**
+     * Provides a list containing references to all the nodes that were modified by the last operation upon the tree.
+     * @return  The list containing all the nodes that were modified by the last operation upon the tree or null if
+     *          there was no operation made upon the tree thus far, which would mean that the tree is empty.
+     */
+    public LinkedList<Node<T>> getModifiedNodesList() {
+        return modifiedNodesList;
+    }
+
+    /**
+     * Outputs the tree printing it by level. Meaning that the root/header is printed out first, then its children from
+     * left to right, then their children from left to right and so on.
+     * @param root  The root/header of the subtree that is to be printed by level.
+     */
     public void byLevel(Node<T> root) {
         Queue<Node> level = new LinkedList<>();
         level.add(root);
+
         while (!level.isEmpty()) {
             Node node = level.poll();
+
             System.out.print(node.getData().toString() + " ");
-            if (node.getLeft() != null)
+
+            if (node.getLeft() != null) {
                 level.add(node.getLeft());
-            if (node.getRight() != null)
+            }
+
+            if (node.getRight() != null) {
                 level.add(node.getRight());
+            }
         }
     }
 
-    //just to test
+    /**
+     * Prints the tree in pre-order traversal.
+     * @param node  The node whose content is to be printed in the context of the pre-order traversal.
+     */
     public void preOrder(Node<T> node) {
         if (node != null) {
             System.out.print(node.getData().toString() + " ");
@@ -229,135 +420,66 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Inserts a new node. Calls a private recursive insert function
-     * @param data element to insert
-     * @return void
+     * Prints the tree in in-order traversal.
+     * @param node  The node whose content is to be printed in the context of the in-order traversal.
      */
-    public void insert(T data) throws DuplicateNodeInsertException {
-        System.out.println("");
-        System.out.println("Voy a insertar: " + data.toString());
-        //if (contains(data)) throw new RuntimeException("CANT ADD DOUBLE VALUES");
-        if (header != null) {
-            header = insertR(header, data);
-            if (wasRotated) System.out.println("Tambien rota nodo: " + header.getData().toString());
-            System.out.println("Arbol despues de rotar: ");
-            preOrder(header);
-            System.out.println("");
-            wasRotated = false;
-            return;
+    public void inOrder(Node<T> node) {
+        if (node != null) {
+            inOrder(node.getLeft());
+            System.out.println(node.getData().toString() + " ");
+            inOrder(node.getRight());
         }
-
-        header = new Node<T>(data);
-
-        modifiedNodes.add(header);
-
-        System.out.println("Arbol despues de rotar: ");
-        preOrder(header);
-        System.out.println("");
     }
 
-    private Node<T> insertR(Node<T> node, T data) throws DuplicateNodeInsertException {
-        if (data.compareTo(node.getData()) < 0) {
-            if (node.getLeft() == null) {
-                Node<T> newNode = new Node(data);
+    /**
+     * Prints the tree in post-order traversal.
+     * @param node  The node whose content is to be printed in the context of the post-order traversal.
+     */
+    public void postOrder(Node<T> node) {
+        if (node != null) {
+            inOrder(node.getLeft());
+            inOrder(node.getRight());
+            System.out.println(node.getData().toString() + " ");
+        }
+    }
 
-                node.setLeft(newNode);
+    /*
+    /**
+     * Looks for a node containing the specified data and returns a list of all the block's index that modified such
+     * node. It is understood by "modification" the insertion of the node, the rotation of the node or the replacement
+     * of one or both of the node's children by any certain operation. The function calls for a more specific
+     * recursive function lookUpR for an easier search of the node containing the specified data.
+     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
+     * @return  A list with all the block's index that modified the node containing the specified data.
+     */
+    /*public LinkedList<Integer> lookUp(T data, HashMap<T, LinkedList<Integer>> modifiedNodesMap){
+        return lookUpR(data, header, modifiedNodesMap);
+    }*/
 
-                modifiedNodes.add(newNode);     // The new leaf is added to the modifiedNodes list
-                modifiedNodes.add(node);        // Node has a new child, therefore it is also added to modifiedNodes
-            } else {
-                node.setLeft(insertR(node.getLeft(), data));
-            }
+    /*
+    /**
+     * Recursive function called by lookUp that serves the same purpose as its caller.
+     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
+     * @param node  The node to be used for a recursive search of the node containing the specified data.
+     * @return  A list with all the block's index that modified the node containing the specified data.
+     */
+    /*private LinkedList<Integer> lookUpR(T data, Node<T> node, HashMap<T, LinkedList<Integer>> modifiedNodesMap) {
+        if (node == null) {
+            return null;
+        }
+
+        if (data.compareTo(node.getData()) < 0){
+            return lookUpR(data, node.getLeft(), modifiedNodesMap);
         } else if (data.compareTo(node.getData()) > 0){
-            if (node.getRight() == null) {
-                Node<T> newNode = new Node(data);
-
-                node.setRight(newNode);
-
-                modifiedNodes.add(newNode);     // The new leaf is added to the modifiedNodes list
-                modifiedNodes.add(node);        // Node has a new child, therefore it is also added to modifiedNodes
-            } else {
-                node.setRight(insertR(node.getRight(), data));
-            }
-        } else {
-            throw new DuplicateNodeInsertException("This AVL tree implementation doesn't allow for duplicate nodes.");
+            return lookUpR(data, node.getRight(), modifiedNodesMap);
         }
 
-        if ((node.getLeft() == null) && (node.getRight() != null)) {
-            node.setHeight(node.getRight().getHeight() + 1);
-        } else if ((node.getRight() == null) && (node.getLeft() != null)) {
-            node.setHeight(node.getLeft().getHeight() + 1);
-        } else {
-            node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
-        }
-        return balanceTree(node);
-    }
+        return modifiedNodesMap.get(data);
+    }*/
 
-    private Node<T> rightRotate(Node<T> node) {
-//        System.out.println("Arbol antes de rotar a la derecha:");
-//        preOrder(header);
-//        System.out.println("");
-        Node<T> aux = node.getLeft();
-        System.out.println("Aca roto un nodo a la derecha: " + aux.getData().toString());
-        node.setLeft(aux.getRight());
-        aux.setRight(node);
-        if (node.getLeft() != null)
-            System.out.println("Aca roto un nodo a la derecha: " + node.getLeft().getData().toString());
 
-        if (node.getData().compareTo(header.getData()) == 0)
-            header = aux;
-
-        if (!modifiedNodes.contains(node))
-            modifiedNodes.add(node);
-
-        if (!modifiedNodes.contains(aux))
-            modifiedNodes.add(aux);
-
-        node.setHeight(Math.max(height(node.getLeft()), height(node.getRight())) + 1);
-        aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight())) + 1);
-
-        System.out.println("");
-        return aux;
-    }
-
-    private Node<T> leftRotate(Node<T> node) {
-//        System.out.println("Arbol antes de rotar a la izquierda:");
-//        preOrder(header);
-//        System.out.println("");
-        Node<T> aux = node.getRight();
-        System.out.println("Aca roto un nodoa la izquierda: " + aux.getData().toString());
-        node.setRight(aux.getLeft());
-        if (node.getRight() != null)
-            System.out.println("Aca roto un nodo a la izquierda: " + node.getRight().getData().toString());
-        aux.setLeft(node);
-
-        if (node.getData().compareTo(header.getData()) == 0)
-            header = aux;
-
-        if (!modifiedNodes.contains(node))
-            modifiedNodes.add(node);
-
-        if (!modifiedNodes.contains(aux))
-            modifiedNodes.add(aux);
-
-        node.setHeight(Math.max(height(node.getLeft()), height(node.getRight()) + 1));
-        aux.setHeight(Math.max(height(aux.getLeft()), height(aux.getRight()) + 1));
-
-        System.out.println("");
-        return aux;
-    }
-
-    int getBalance(Node<T> N) {
-        if (N == null)
-            return 0;
-
-        return height(N.getLeft()) - height(N.getRight());
-    }
-
-    int height(Node<T> N) {
-        if (N == null)
-            return -1;
-
-        return N.getHeight();
+    // THIS IS A TEMPORARY IMPLEMENTATION, WE NEED TO CHANGE THIS
+    public String toStringForHash() {
+        return this.toString();
     }
 }
