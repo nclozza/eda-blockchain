@@ -23,21 +23,8 @@ public class BinaryTreeView<T> extends JPanel {
   /* The font for the tree nodes. */
   protected Font font = new Font("Courier New", 1, 30);
 
-  /*
-   * Create a new window with the given width and height
-   * that is showing the given tree.
-   */
-  private Image backgroundImage;
-
-  // Some code to initialize the background image.
-  // Here, we use the constructor to load the image. This
-  // can vary depending on the use case of the panel.
-
 
   public BinaryTreeView(Node<T> tree, int width, int height) throws IOException {
-
-    //Import background image from external file
-    //backgroundImage = ImageIO.read(new File("C:/Users/Bianca/Pictures/RickAndMorty.jpg"));
 
     Color background = new Color(240, 122, 0);
     //Initialize drawing colors, border, opacity.
@@ -79,7 +66,6 @@ public class BinaryTreeView<T> extends JPanel {
     paintImmediately(0, 0, getWidth(), getHeight());
   }
 
-
   /*
    * Draw the contents of the tree into the given Graphics
    * context.
@@ -118,7 +104,6 @@ public class BinaryTreeView<T> extends JPanel {
       }
     }
 
-
   }
 
 
@@ -136,10 +121,10 @@ public class BinaryTreeView<T> extends JPanel {
       drawTree(g, 0, width, 0, height / (treeHeight + 1), tree);
     }
 
+  }
 
-      //Draws background based on external image
-    //g.drawImage(backgroundImage, 0, 0, this);
-//    drawTree(g, 0, width, 0, height / (treeHeight + 1), tree);
-
+  public void closeWindow(){
+      JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+      frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
   }
 }
