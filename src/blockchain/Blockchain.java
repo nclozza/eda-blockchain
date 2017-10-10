@@ -17,6 +17,10 @@ public class Blockchain<T extends Comparable<? super T>> {
     this.zeros = zeros;
   }
 
+  public String getNewBlockHash() {
+    return blockchain.getFirst().getHash();
+  }
+
   public void add(T element, boolean status) {
 
 

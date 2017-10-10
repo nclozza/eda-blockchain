@@ -26,7 +26,6 @@ public class MainHandler {
     }
   }
 
-
   public void runCode() {
     String input;
     boolean zerosSet = false;
@@ -35,16 +34,17 @@ public class MainHandler {
       while (true) {
 
         if (!zerosSet) {
-          System.out.println("Ingese la cantidad de zeros: ");
+          System.out.print("Ingese la cantidad de ceros: ");
           input = ConsoleReader.readingFromConsole();
 
           if (input.matches("^\\d*$")) {
             Integer aux = Integer.parseInt(input.substring(0));
             blockchain.setZeros(aux);
             zerosSet = true;
-
+            System.out.println("Blockchain inicializada con " + aux + " cero" + (aux == 0 || aux > 1 ? "s" : ""));
+            System.out.println();
           } else {
-            System.out.println("No se ingreso un numero.");
+            System.out.println("No se ingreso un numero.\n");
           }
 
         } else {
@@ -54,15 +54,21 @@ public class MainHandler {
           input = ConsoleReader.readingFromConsole();
 
           if (input.matches("^(add\\s\\d*)$")) {
-            System.out.println("Agregaste un elemento");
             Integer aux = Integer.parseInt(input.substring(4));
-            System.out.println("Voy a agregar este nodo: " + aux);
+            System.out.println("Agregando nodo: " + aux);
+
             try {
               avlTree.insert(aux);
+              System.out.println("Se agrego correctamente el nodo: " + aux);
+              System.out.println("Generando hash del bloque, esto puede demorar.");
               blockchain.add(aux, true);
+              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+
             } catch (DuplicateNodeInsertException e) {
-              e.printStackTrace();
+              System.out.println("No se pudo agregar, nodo ya existente");
+              System.out.println("Generando hash del bloque, esto puede demorar.");
               blockchain.add(aux, false);
+              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
             }
 
           } else if (input.matches("^(lookup\\s\\d*)$")) {
@@ -71,21 +77,22 @@ public class MainHandler {
             System.out.println("Voy a buscar este nodo: " + aux);
 
           } else if (input.matches("^(remove\\s\\d*)$")) {
-            System.out.println("Borraste un elemento");
             Integer aux = Integer.parseInt(input.substring(7));
-            System.out.println("Borraste este nodo: " + aux);
+            System.out.println("Borrando nodo: " + aux);
+
             try {
               avlTree.delete(aux);
+              System.out.println("Se eliminó correctamente el nodo: " + aux);
+              System.out.println("Generando hash del bloque, esto puede demorar.");
               blockchain.add(aux, true);
-            } catch (NodeNotFoundException e) {
-              e.printStackTrace();
-              blockchain.add(aux, false);
-            }
+              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
 
-          } else if (input.matches("^(zeros\\s\\d*)$")) {
-            System.out.println("Seteaste los zeros");
-            Integer aux = Integer.parseInt(input.substring(6));
-            System.out.println("Seteaste esta cantidad de zeros: " + aux);
+            } catch (NodeNotFoundException e) {
+              System.out.println("No se pudo eliminar, nodo inexistente");
+              System.out.println("Generando hash del bloque, esto puede demorar.");
+              blockchain.add(aux, false);
+              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+            }
 
           } else if (input.matches("^(validate)$")) {
             System.out.println("Quisiste validar");
@@ -100,13 +107,13 @@ public class MainHandler {
           } else {
             System.out.println("Horrible input");
           }
+
           binaryTreeView.refresh(avlTree.getRoot());
         }
       }
+
     } catch (IOException e) {
       System.out.println("Exception has been thrown");
     }
   }
-
-
 }
