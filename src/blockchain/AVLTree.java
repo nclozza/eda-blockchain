@@ -41,9 +41,7 @@ public class AVLTree<T extends Comparable<? super T>> {
         return header;
     }
 
-    /**
-     * This is a temporary implementation, we need to change this
-     */
+    // THIS IS A TEMPORARY IMPLEMENTATION, WE NEED TO CHANGE THIS
     public String toStringForHash() {
         return this.toString();
     }
@@ -312,15 +310,13 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @param data  The data that will be in the new node to be inserted.
      */
     public void insert(T data) throws DuplicateNodeInsertException {
-        if (header != null) {
+        if (header == null) {
+            header = new Node<T>(data);
+
+            modifiedNodes.add(header);
+        } else {
             header = insertR(header, data);
-
-            return;
         }
-
-        header = new Node<T>(data);
-
-        modifiedNodes.add(header);
     }
 
     /**
