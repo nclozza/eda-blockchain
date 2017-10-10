@@ -41,17 +41,17 @@ public class AVLTree<T extends Comparable<? super T>> {
 
     /**
      *
-     * @param x Element to find
+     * @param data Element to find
      * @param node Root of the tree
      * @return True if the element is found, false otherwise
      */
-    private boolean containsR(T x, Node<T> node) {
-        if (node == null){
+    private boolean containsR(T data, Node<T> node) {
+        if (node == null) {
             return false; // The node was not found
-        } else if (x.compareTo(node.getData()) < 0) {
-            return containsR(x, node.getLeft());
-        } else if (x.compareTo(node.getData()) > 0) {
-            return containsR(x, node.getRight());
+        } else if (data.compareTo(node.getData()) < 0) {
+            return containsR(data, node.getLeft());
+        } else if (data.compareTo(node.getData()) > 0) {
+            return containsR(data, node.getRight());
         }
 
         return true; // Can only reach here if node was found
@@ -112,7 +112,7 @@ public class AVLTree<T extends Comparable<? super T>> {
                     header = rightChild;
                 }
 
-                return header;
+                return null;
             } else if (rightChild == null) {
                 if (node == header) {
                     header = leftChild;
@@ -121,22 +121,16 @@ public class AVLTree<T extends Comparable<? super T>> {
                 return null;
             } else {
                 Node<T> largestInLeftSubtree = getMaxNode(leftChild);
+
                 node.setData(largestInLeftSubtree.getData());
                 node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
-
             }
         } else if (data.compareTo(currentData) < 0) {
-            Node<T> auxLeftChild = leftChild;
-            node.setLeft(deleteR(data, leftChild));
-
-            if (node.getLeft() == null || auxLeftChild.getData().compareTo(node.getLeft().getData()) != 0) {
+            if (node.getLeft() == null || leftChild.getData().compareTo(node.getLeft().getData()) != 0) {
                 modifiedNodes.add(node);
             }
         } else {
-            Node<T> auxRightChild = rightChild;
-            node.setRight(deleteR(data, rightChild));
-
-            if (node.getRight() == null || auxRightChild.getData().compareTo(node.getRight().getData()) != 0) {
+            if (node.getRight() == null || rightChild.getData().compareTo(node.getRight().getData()) != 0) {
                 modifiedNodes.add(node);
             }
         }
@@ -148,23 +142,20 @@ public class AVLTree<T extends Comparable<? super T>> {
         return balanceTree(node);
     }
 
+    /**
+     * Function to get the highest valued node from the subtree of which the specified node is the root/header.
+     * @param root  The root from which to start the search for the highest valued node in the subtree.
+     * @return  The highest valued node in the subtree.
+     */
+    private Node<T> getMaxNode(Node<T> root) {
+        Node<T> currentNode = root;
 
-    private Node<T> getMaxNode(Node<T> node) {
-       return getMaxNodeR(node);
-    }
-
-    private Node<T> getMaxNodeR(Node<T> node) {
-        if (node.getRight() == null && node.getLeft() != null) {
-            return node;
+        while (currentNode.getRight() != null) {
+            currentNode = currentNode.getRight();
         }
 
-        else if (node.getLeft() == null && node.getRight()!= null) {
-            return getMaxNodeR(node.getRight());
-        }
-
-        return node;
+        return currentNode;
     }
-
 
     /**
      * Balances the tree leaving a height difference between all leafs of 1 or -1 at most.
@@ -197,14 +188,20 @@ public class AVLTree<T extends Comparable<? super T>> {
         return currentNode;
     }
 
-    //just to test
+    /**
+     * Outputs the tree printing it by level. Meaning that the root/header is printed out first, then its children from
+     * left to right, then their children from left to right and so on.
+     * @param root  The root/header of the subtree that is to be printed by level.
+     */
     public void byLevel(Node<T> root) {
         Queue<Node> level = new LinkedList<>();
         level.add(root);
 
         while (!level.isEmpty()) {
             Node node = level.poll();
+
             System.out.print(node.getData().toString() + " ");
+
             if (node.getLeft() != null) {
                 level.add(node.getLeft());
             }
@@ -217,7 +214,7 @@ public class AVLTree<T extends Comparable<? super T>> {
 
     /**
      * Prints the tree in pre-order traversal.
-     * @param node  The node to be printed before its left and right children, in that order.
+     * @param node  The node whose content is to be printed in the context of the pre-order traversal.
      */
     public void preOrder(Node<T> node) {
         if (node != null) {
@@ -226,7 +223,31 @@ public class AVLTree<T extends Comparable<? super T>> {
             preOrder(node.getRight());
         }
     }
-    
+
+    /**
+     * Prints the tree in in-order traversal.
+     * @param node  The node whose content is to be printed in the context of the in-order traversal.
+     */
+    public void inOrder(Node<T> node) {
+        if (node != null) {
+            inOrder(node.getLeft());
+            System.out.println(node.getData().toString() + " ");
+            inOrder(node.getRight());
+        }
+    }
+
+    /**
+     * Prints the tree in post-order traversal.
+     * @param node  The node whose content is to be printed in the context of the post-order traversal.
+     */
+    public void postOrder(Node<T> node) {
+        if (node != null) {
+            inOrder(node.getLeft());
+            inOrder(node.getRight());
+            System.out.println(node.getData().toString() + " ");
+        }
+    }
+
     /**
      * Inserts a new node with the specified data. Calls a private recursive insert function to look for the proper
      * place to insert the new node.
@@ -248,7 +269,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      * Recursive function which looks for the proper place to insert a new node with the specified data in the tree.
      * @param currentNode   Node that works as a reference to know where to insert the new node.
      * @param data  The data that will be in the new node to be inserted.
-     * @return  The header of the subtree that was affected by the node's insertion.
+     * @return  The root/header of the subtree that was affected by the node's insertion.
      * @throws DuplicateNodeInsertException if there is an attempt to insert a new node with the specified data while
      *      already having an existing node with such data in the tree.
      */
@@ -293,9 +314,9 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Makes a right rotation upon the subtree of which the specified node is the header.
+     * Makes a right rotation upon the subtree of which the specified node is the root/header.
      * @param node  Node which is to be rotated to the right.
-     * @return  The new header of the previously rotated subtree.
+     * @return  The new root/header of the previously rotated subtree.
      */
     private Node<T> rightRotate(Node<T> node) {
         Node<T> aux = node.getLeft();
@@ -323,9 +344,9 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Makes a left rotation upon the subtree of which the specified node is the header.
+     * Makes a left rotation upon the subtree of which the specified node is the root/header.
      * @param node  Node which is to be rotated to the left.
-     * @return  The new header of the previously rotated subtree.
+     * @return  The new root/header of the previously rotated subtree.
      */
     private Node<T> leftRotate(Node<T> node) {
         Node<T> aux = node.getRight();
