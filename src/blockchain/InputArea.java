@@ -88,7 +88,7 @@ public class InputArea extends JPanel implements ActionListener {
 
             } else if (input.matches("^(exit)$")){
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                frame.dispose();
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 
             } else {
                 return "Horrible input";
