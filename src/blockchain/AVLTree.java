@@ -127,7 +127,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      */
     private Node<T> deleteR(T data, Node<T> node) throws NodeNotFoundException {
         if (node == null) {
-            throw new NodeNotFoundException("The node with the specified data doesn't exist in the tree.");
+            throw new NodeNotFoundException("The node with the specified data does not exist in the tree.");
         }
 
         Node<T> leftChild = node.getLeft();
@@ -355,8 +355,7 @@ public class AVLTree<T extends Comparable<? super T>> {
                 currentNode.setRight(insertR(currentNode.getRight(), data));
             }
         } else {
-            throw new DuplicateNodeInsertException("This AVL tree implementation doesn't allow for duplicate" +
-                    "currentNodes.");
+            throw new DuplicateNodeInsertException("This AVL tree implementation does not allow for duplicate nodes.");
         }
 
         // Update the modified currentNodes' heights.
