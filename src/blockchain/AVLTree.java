@@ -87,9 +87,10 @@ public class AVLTree<T extends Comparable<? super T>> {
 
     /**
      *
-     * @param data Element to delete
-     * @param node Root of the tree
-     * @return Header after deletion, balanced
+     * @param data
+     * @param node
+     * @return
+     * @throws NodeNotFoundException if there isn't an existing node containing the specified data.
      */
     private Node<T> deleteR(T data, Node<T> node) throws NodeNotFoundException {
         if (node == null) {
@@ -100,45 +101,53 @@ public class AVLTree<T extends Comparable<? super T>> {
         Node<T> rightChild = node.getRight();
         T currentData = node.getData();
 
-        if (data.compareTo(currentData) == 0) {
-            if (leftChild == null && rightChild == null) {
-                if (node == header) {
-                    header = null;
-                }
-
-                return null;
-            } else if (leftChild == null) {
-                if (node == header) {
-                    header = rightChild;
-                }
-
-                return null;
-            } else if (rightChild == null) {
-                if (node == header) {
-                    header = leftChild;
-                }
-
-                return null;
-            } else {
-                Node<T> largestInLeftSubtree = getMaxNode(leftChild);
-
-                node.setData(largestInLeftSubtree.getData());
-                node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
-            }
-        } else if (data.compareTo(currentData) < 0) {
+        if (data.compareTo(currentData) < 0) {
             if (node.getLeft() == null || leftChild.getData().compareTo(node.getLeft().getData()) != 0) {
                 modifiedNodes.add(node);
             }
-        } else {
+
+            return deleteR(data, leftChild);
+        } else if (data.compareTo(currentData) > 0) {
             if (node.getRight() == null || rightChild.getData().compareTo(node.getRight().getData()) != 0) {
                 modifiedNodes.add(node);
             }
+
+            return deleteR(data, rightChild);
+        } else {
+            return deleteFoundNode(node);
+        }
+    }
+
+    private Node<T> deleteFoundNode(Node<T> node) throws NodeNotFoundException {
+        if (node.getLeft() == null && node.getRight() == null) {
+            if (node == header) {
+                header = null;
+            }
+
+            return null;
+        } else if (node.getLeft() == null) {
+            if (node == header) {
+                header = node.getRight();
+            }
+
+            return null;
+        } else if (node.getRight() == null) {
+            if (node == header) {
+                header = node.getLeft();
+            }
+
+            return null;
+        } else {
+            Node<T> largestInLeftSubtree = getMaxNode(node.getLeft());
+
+            node.setData(largestInLeftSubtree.getData());
+            node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
         }
 
-        // Update the height parameter
+        // Update the height parameter.
         node.setHeight(height(node));
 
-        // Check on every delete operation whether tree has become unbalanced
+        // Check on every delete operation whether tree has become unbalanced.
         return balanceTree(node);
     }
 
