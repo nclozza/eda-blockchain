@@ -16,7 +16,10 @@ public class Main {
     String input;
 
     AVLTree<Integer> t = new AVLTree();
-    t.insert(5);
+    try{ t.insert(5);
+    }catch(Exception e) {
+    	System.out.println("CHUPALA");
+    }
 
     BinaryTreeView<Integer> btv = new BinaryTreeView<>(t.getRoot(),800, 600 );
 
@@ -31,7 +34,8 @@ public class Main {
           System.out.println("Agregaste un elemento");
           Integer aux = Integer.parseInt(input.substring(4));
           System.out.println("Voy a agregar este nodo: " + aux);
-          t.insert(aux);
+          try{ t.insert(aux);} catch(Exception e){    	System.out.println("CHUPALA");
+          }
         } else if (input.matches("^(lookup\\s\\d*)$")) {
           System.out.println("Buscaste un elemento");
           Integer aux = Integer.parseInt(input.substring(7));
@@ -40,7 +44,8 @@ public class Main {
           System.out.println("Borraste un elemento");
           Integer aux = Integer.parseInt(input.substring(7));
           System.out.println("Borraste este nodo: " + aux);
-          t.delete(aux);
+          try{t.delete(aux);} catch(Exception e) {    	System.out.println("CHUPALA");
+          }
         } else if (input.matches("^(zeros\\s\\d*)$")) {
           System.out.println("Seteaste los zeros");
           Integer aux = Integer.parseInt(input.substring(6));
