@@ -1,4 +1,3 @@
-import blockchain.AVLTree;
 import blockchain.DuplicateNodeInsertException;
 import blockchain.MainHandler;
 
@@ -8,6 +7,5 @@ public class Main {
 
     MainHandler mainHandler = new MainHandler();
     mainHandler.runCode();
-
   }
 }

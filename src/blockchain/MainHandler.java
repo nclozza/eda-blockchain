@@ -34,7 +34,7 @@ public class MainHandler {
       while (true) {
 
         if (!zerosSet) {
-          System.out.print("Ingese la cantidad de ceros: ");
+          System.out.print("Ingrese la cantidad de ceros: ");
           input = ConsoleReader.readingFromConsole();
 
           if (input.matches("^\\d*$")) {
@@ -60,15 +60,25 @@ public class MainHandler {
             try {
               avlTree.insert(aux);
               System.out.println("Se agrego correctamente el nodo: " + aux);
-              System.out.println("Generando hash del bloque, esto puede demorar.");
-              blockchain.add(aux, true);
-              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+              try {
+                blockchain.add(aux, true);
+                System.out.println("Generando hash del bloque, esto puede demorar.");
+                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+
+              } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+                System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
+              }
 
             } catch (DuplicateNodeInsertException e) {
               System.out.println("No se pudo agregar, nodo ya existente");
-              System.out.println("Generando hash del bloque, esto puede demorar.");
-              blockchain.add(aux, false);
-              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+              try {
+                blockchain.add(aux, false);
+                System.out.println("Generando hash del bloque, esto puede demorar.");
+                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+
+              } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+                System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
+              }
             }
 
           } else if (input.matches("^(lookup\\s\\d*)$")) {
@@ -83,24 +93,39 @@ public class MainHandler {
             try {
               avlTree.delete(aux);
               System.out.println("Se eliminó correctamente el nodo: " + aux);
-              System.out.println("Generando hash del bloque, esto puede demorar.");
-              blockchain.add(aux, true);
-              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+              try {
+                blockchain.add(aux, true);
+                System.out.println("Generando hash del bloque, esto puede demorar.");
+                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+
+              } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+                System.out.println("La blockchain es inálida, no se pueden realizar operaciones\n");
+              }
 
             } catch (NodeNotFoundException e) {
               System.out.println("No se pudo eliminar, nodo inexistente");
-              System.out.println("Generando hash del bloque, esto puede demorar.");
-              blockchain.add(aux, false);
-              System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+              try {
+                blockchain.add(aux, false);
+                System.out.println("Generando hash del bloque, esto puede demorar.");
+                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+
+              } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+                System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
+              }
             }
 
           } else if (input.matches("^(validate)$")) {
-            System.out.println("Quisiste validar");
+            if (blockchain.checkBlockchainStatus()) {
+              System.out.println("La blockchain es válida\n");
+            } else {
+              System.out.println("La blockchain es inválida\n");
+            }
 
           } else if (input.matches("^(modify)$")) {
             System.out.println("Quisiste modificar archivo, todavia no esta listo");
 
           } else if (input.matches("^(exit)$")) {
+            binaryTreeView.closeWindow();
             System.out.println("Nos vemos");
             break;
 
