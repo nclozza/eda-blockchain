@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class AVLTree<T extends Comparable<? super T>> {
-
     private Node<T> header;
     private HashMap<T, LinkedList<Integer>> modifiedFields = null;
     /* Key = T = We use the data of the node as a key, if some operation modifies it, we add
@@ -16,14 +15,28 @@ public class AVLTree<T extends Comparable<? super T>> {
      */
     private LinkedList<Node<T>> modifiedNodes = new LinkedList<>();
 
+    /**
+     * Creates an instance of the AVLTree class which should represent an AVL tree. Said instance has the specified data
+     * as the header's value by default. The header works as a general reference for this implementation and as the root
+     * node of the AVL tree.
+     * @param data  Data to be contained by the header
+     */
     public AVLTree(T data) {
         header = new Node<T>(data);
     }
 
+    /**
+     * Creates an instance of the AVLTree class which should represent an AVL tree. Said instance has a null header,
+     * this means that the tree is empty and there is no root yet.
+     */
     public AVLTree() {
         header = null;
     }
 
+    /**
+     * Getter function for the root node of the AVL tree.
+     * @return  The root node, in this case the header.
+     */
     public Node<T> getRoot() {
         return header;
     }
@@ -35,32 +48,52 @@ public class AVLTree<T extends Comparable<? super T>> {
         return this.toString();
     }
 
-    public boolean contains(T x){
-        return containsR(x, header);
+    /**
+     * Looks for a node containing the specified data calling the recursive function containsR.
+     * @param data  Data to be found contained in a node.
+     * @return  True if the node containing the data is found, false otherwise.
+     */
+    public boolean contains(T data){
+        return containsR(data, header);
     }
 
     /**
-     *
-     * @param data Element to find
-     * @param node Root of the tree
-     * @return True if the element is found, false otherwise
+     * Looks for a node containing the specified data recursively and returns true if such node could be found, false
+     * otherwise.
+     * @param data  Data to be found contained in a node.
+     * @param node  Node to be use for the search of the specified data.
+     * @return True if the node containing the data is found, false otherwise.
      */
     private boolean containsR(T data, Node<T> node) {
         if (node == null) {
-            return false; // The node was not found
+            return false;
         } else if (data.compareTo(node.getData()) < 0) {
             return containsR(data, node.getLeft());
         } else if (data.compareTo(node.getData()) > 0) {
             return containsR(data, node.getRight());
         }
 
-        return true; // Can only reach here if node was found
+        return true;
     }
 
+    /**
+     * Looks for a node containing the specified data and returns a list of all the block's index that modified such
+     * node. It is understood by "modification" the insertion of the node, the rotation of the node or the replacement
+     * of one or both of the node's children by any certain operation. The function calls for a more specific
+     * recursive function lookUpR for an easier search of the node containing the specified data.
+     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
+     * @return  A list with all the block's index that modified the node containing the specified data.
+     */
     public LinkedList<Integer> lookUp(T data){
         return lookUpR(data, header);
     }
 
+    /**
+     * Recursive function called by lookUp that serves the same purpose as its caller.
+     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
+     * @param node  The node to be used for a recursive search of the node containing the specified data.
+     * @return  A list with all the block's index that modified the node containing the specified data.
+     */
     private LinkedList<Integer> lookUpR(T data, Node<T> node) {
         if (node == null) {
             return null;
@@ -76,10 +109,10 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Delete operation. Calls a private recursive method
-     * @param data Element to delete
-     * @return Null if a leaf has been deleted
-     *         Balance of new tree otherwise
+     * Delete operation. Calls a private recursive method to delete the node containing the specified data.
+     * @param data  Data contained by the node to be deleted.
+     * @return  True if there is still a tree with a root/header after the deletion. False if the header/root was the
+     *          only node in the tree and it was deleted.
      */
     public boolean delete(T data) throws NodeNotFoundException {
         return deleteR(data, header) != null;
@@ -131,7 +164,9 @@ public class AVLTree<T extends Comparable<? super T>> {
      * replacing the given node with a children or the highest valued descendant of its left subtree.
      * @param node  The node to be replaced by one of its children or the highest valued descendant of its left subtree
      *              if it were to have both children.
-     * @return  The replacement for the specified node which is to be deleted.
+     * @return  The replacement for the specified node which is to be deleted. The replacement could be null if it had
+     *          no children, one if its children if it only had one or the highest valued descendant of its left subtree
+     *          if it had both children.
      * @throws NodeNotFoundException if there isn't an existing node containing the specified data, which in this case
      *         won't happen because the node to be deleted is the old copy of the replacement node.
      */
@@ -398,7 +433,12 @@ public class AVLTree<T extends Comparable<? super T>> {
 
     /**
      * Calculates the balancing factor of a specified node. The balancing factor of a node is the height difference
-     * between its left child and its right child in that order.
+     * between its left child and its right child in that order. If the subtree that had the specified node as its
+     * root/header was balanced, its balancing factor would be one of these values {-1, 0, 1} depending on its left and
+     * right children's heights. If it was not balanced then the value would be an integer different from those
+     * specified previously, also depending on its left and right children's heights. If the AVL tree were properly
+     * balanced after each insertion or deletion, every node that is not balanced should have -2 or 2 as its balancing
+     * factor.
      * @param node  Node whose balancing factor is to be calculated.
      * @return  Balancing factor of the specified node.
      */
