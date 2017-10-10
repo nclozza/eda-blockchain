@@ -86,8 +86,9 @@ public class AVLTree<T extends Comparable<? super T>> {
      * Inserts a new node with the specified data. Calls a private recursive insert function to look for the proper
      * place to insert the new node.
      * @param data  The data that will be in the new node to be inserted.
+     * @return  The list of nodes that were modified by the insertion.
      */
-    public void insert(T data) throws DuplicateNodeInsertException {
+    public LinkedList<Node<T>> insert(T data) throws DuplicateNodeInsertException {
         modifiedNodesList = new LinkedList<>();
 
         if (header == null) {
@@ -97,6 +98,8 @@ public class AVLTree<T extends Comparable<? super T>> {
         } else {
             header = insertR(header, data);
         }
+
+        return modifiedNodesList;
     }
 
     /**
@@ -149,13 +152,15 @@ public class AVLTree<T extends Comparable<? super T>> {
     /**
      * Delete operation. Calls a private recursive method to delete the node containing the specified data.
      * @param data  Data contained by the node to be deleted.
-     * @return  True if there is still a tree with a root/header after the deletion. False if the header/root was the
+     * @return  The list of nodes that were modified by the deletion.
      *          only node in the tree and it was deleted.
      */
-    public boolean delete(T data) throws NodeNotFoundException {
+    public LinkedList<Node<T>> delete(T data) throws NodeNotFoundException {
         modifiedNodesList = new LinkedList<>();
 
-        return deleteR(data, header) != null;
+        deleteR(data, header);
+
+        return modifiedNodesList;
     }
 
     /**
