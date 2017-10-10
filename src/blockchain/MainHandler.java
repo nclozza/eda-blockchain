@@ -15,7 +15,7 @@ public class MainHandler {
   private HashMap<Integer, LinkedList<Integer>> hashMap;
   private BinaryTreeView<Integer> binaryTreeView;
 
-  public MainHandler(int zeros) {
+  public MainHandler() {
     this.avlTree = new AVLTree<>();
     this.blockchain = new Blockchain<>();
     this.hashMap = new HashMap<>();
@@ -57,7 +57,13 @@ public class MainHandler {
             System.out.println("Agregaste un elemento");
             Integer aux = Integer.parseInt(input.substring(4));
             System.out.println("Voy a agregar este nodo: " + aux);
+            try {
               avlTree.insert(aux);
+              blockchain.add(aux, true);
+            } catch (DuplicateNodeInsertException e) {
+              e.printStackTrace();
+              blockchain.add(aux, false);
+            }
 
           } else if (input.matches("^(lookup\\s\\d*)$")) {
             System.out.println("Buscaste un elemento");
@@ -73,6 +79,7 @@ public class MainHandler {
               blockchain.add(aux, true);
             } catch (NodeNotFoundException e) {
               e.printStackTrace();
+              blockchain.add(aux, false);
             }
 
           } else if (input.matches("^(zeros\\s\\d*)$")) {
