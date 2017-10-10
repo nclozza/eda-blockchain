@@ -87,7 +87,7 @@ public class InputArea extends JPanel implements ActionListener {
                 return "Quisiste modificar el archivo, todavia no esta listo";
 
             } else if (input.matches("^(exit)$")){
-                return "Nos vemos";
+               closeWindow();
 
             } else {
                 return "Horrible input";
@@ -119,6 +119,11 @@ public class InputArea extends JPanel implements ActionListener {
                 InputArea.createAndShowGUI();
             }
         });
+    }
+
+    public void closeWindow(){
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
 }
