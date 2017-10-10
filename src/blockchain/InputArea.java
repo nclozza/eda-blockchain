@@ -87,7 +87,8 @@ public class InputArea extends JPanel implements ActionListener {
                 return "Quisiste modificar el archivo, todavia no esta listo";
 
             } else if (input.matches("^(exit)$")){
-                return "Nos vemos";
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                frame.dispose();
 
             } else {
                 return "Horrible input";
