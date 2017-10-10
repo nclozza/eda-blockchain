@@ -107,16 +107,21 @@ public class AVLTree<T extends Comparable<? super T>> {
             }
 
             node.setLeft(deleteR(data, leftChild));
-            return node;
         } else if (data.compareTo(currentData) > 0) {
             if (node.getRight() == null || rightChild.getData().compareTo(node.getRight().getData()) != 0) {
                 modifiedNodes.add(node);
             }
+
             node.setRight(deleteR(data, rightChild));
-            return node;
         } else {
-            return deleteFoundNode(node);
+            node = deleteFoundNode(node);
         }
+
+        // Update the height parameter.
+        node.setHeight(height(node));
+
+        // Check on every delete operation whether tree has become unbalanced.
+        return balanceTree(node);
     }
 
     private Node<T> deleteFoundNode(Node<T> node) throws NodeNotFoundException {
@@ -138,18 +143,13 @@ public class AVLTree<T extends Comparable<? super T>> {
             }
 
             return node.getLeft();
-        } else {
-            Node<T> largestInLeftSubtree = getMaxNode(node.getLeft());
-
-            node.setData(largestInLeftSubtree.getData());
-            node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
         }
 
-        // Update the height parameter.
-        node.setHeight(height(node));
+        // In this case the node has two children, the largest one in its left subtree is chosen to replace it.
+        Node<T> largestInLeftSubtree = getMaxNode(node.getLeft());
 
-        // Check on every delete operation whether tree has become unbalanced.
-        return balanceTree(node);
+        node.setData(largestInLeftSubtree.getData());
+        node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
     }
 
     /**
