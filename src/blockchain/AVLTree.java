@@ -86,10 +86,12 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     *
-     * @param data
-     * @param node
-     * @return
+     * Recursive function responsible of finding a node with the specified data and deleting it through the
+     * deleteFoundNode() function. After having deleted the node it will set the new height and balance the subtree from
+     * where the node was deleted until the root is reached.
+     * @param data  The data of the node to be deleted.
+     * @param node  The current node whose data is to be compared with the specified data to check if it is to be deleted.
+     * @return  A new balanced tree that doesn't contain any nodes with the specified data.
      * @throws NodeNotFoundException if there isn't an existing node containing the specified data.
      */
     private Node<T> deleteR(T data, Node<T> node) throws NodeNotFoundException {
@@ -102,17 +104,17 @@ public class AVLTree<T extends Comparable<? super T>> {
         T currentData = node.getData();
 
         if (data.compareTo(currentData) < 0) {
+            node.setLeft(deleteR(data, leftChild));
+
             if (node.getLeft() == null || leftChild.getData().compareTo(node.getLeft().getData()) != 0) {
                 modifiedNodes.add(node);
             }
-
-            node.setLeft(deleteR(data, leftChild));
         } else if (data.compareTo(currentData) > 0) {
+            node.setRight(deleteR(data, rightChild));
+
             if (node.getRight() == null || rightChild.getData().compareTo(node.getRight().getData()) != 0) {
                 modifiedNodes.add(node);
             }
-
-            node.setRight(deleteR(data, rightChild));
         } else {
             node = deleteFoundNode(node);
         }
@@ -124,6 +126,15 @@ public class AVLTree<T extends Comparable<? super T>> {
         return balanceTree(node);
     }
 
+    /**
+     * Performs the actual deletion of the node unlike delete or deleteR which are wrappers. The deletion consists of
+     * replacing the given node with a children or the highest valued descendant of its left subtree.
+     * @param node  The node to be replaced by one of its children or the highest valued descendant of its left subtree
+     *              if it were to have both children.
+     * @return  The replacement for the specified node which is to be deleted.
+     * @throws NodeNotFoundException if there isn't an existing node containing the specified data, which in this case
+     *         won't happen because the node to be deleted is the old copy of the replacement node.
+     */
     private Node<T> deleteFoundNode(Node<T> node) throws NodeNotFoundException {
         if (node.getLeft() == null && node.getRight() == null) {
             if (node == header) {
@@ -145,11 +156,13 @@ public class AVLTree<T extends Comparable<? super T>> {
             return node.getLeft();
         }
 
-        // In this case the node has two children, the largest one in its left subtree is chosen to replace it.
+        // In this case the node has two children, the largest descendant in its left subtree is chosen to replace it.
         Node<T> largestInLeftSubtree = getMaxNode(node.getLeft());
 
         node.setData(largestInLeftSubtree.getData());
         node.setLeft(deleteR(largestInLeftSubtree.getData(), node.getLeft()));
+
+        return node;
     }
 
     /**
