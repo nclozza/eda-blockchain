@@ -148,6 +148,10 @@ public class AVLTree<T extends Comparable<? super T>> {
             }
         } else {
             node = deleteFoundNode(node);
+
+            if (node == null) {
+                return null;
+            }
         }
 
         // Update the height parameter.
