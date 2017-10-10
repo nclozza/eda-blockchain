@@ -106,13 +106,14 @@ public class AVLTree<T extends Comparable<? super T>> {
                 modifiedNodes.add(node);
             }
 
-            return deleteR(data, leftChild);
+            node.setLeft(deleteR(data, leftChild));
+            return node;
         } else if (data.compareTo(currentData) > 0) {
             if (node.getRight() == null || rightChild.getData().compareTo(node.getRight().getData()) != 0) {
                 modifiedNodes.add(node);
             }
-
-            return deleteR(data, rightChild);
+            node.setRight(deleteR(data, rightChild));
+            return node;
         } else {
             return deleteFoundNode(node);
         }
@@ -130,13 +131,13 @@ public class AVLTree<T extends Comparable<? super T>> {
                 header = node.getRight();
             }
 
-            return null;
+            return node.getRight();
         } else if (node.getRight() == null) {
             if (node == header) {
                 header = node.getLeft();
             }
 
-            return null;
+            return node.getLeft();
         } else {
             Node<T> largestInLeftSubtree = getMaxNode(node.getLeft());
 
