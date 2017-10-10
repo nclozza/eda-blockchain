@@ -47,52 +47,13 @@ public class InputArea extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent evt) {
         String text = textField.getText();
-        String output = textSelector(text);
-        textArea.append(output + newline);
+        //String output = textSelector(text);
+        textArea.append(text + newline);
         textField.selectAll();
 
         //Make sure the new text is visible, even if there
         //was a selection in the text area.
         textArea.setCaretPosition(textArea.getDocument().getLength());
-    }
-
-    public String textSelector(String text){
-        while (true) {
-            String input = text;
-
-            if (input.matches("^(add\\s\\d*)$")) {
-                Integer aux = Integer.parseInt(input.substring(4));
-                System.out.println("Voy a agregar este nodo: " + aux);
-                return "Agregaste un elemento";
-            }
-            else if (input.matches("^(lookup\\s\\d*)$")) {
-                Integer aux = Integer.parseInt(input.substring(7));
-                System.out.println("Voy a buscar este nodo: " + aux);
-                return "Buscaste un elemento";
-            }
-            else if (input.matches("^(remove\\s\\d*)$")) {
-                Integer aux = Integer.parseInt(input.substring(7));
-                System.out.println("Borraste este nodo: " + aux);
-                return "Borraste un elemento";
-
-            } else if (input.matches("^(zeros\\s\\d*)$")) {
-                Integer aux = Integer.parseInt(input.substring(6));
-                System.out.println("Seteaste esta cantidad de zeros: " + aux);
-                return "Seteaste los ceros";
-
-            } else if (input.matches("^(validate)$")) {
-                return "Quisiste validar";
-
-            } else if (input.matches("^(modify)$")){
-                return "Quisiste modificar el archivo, todavia no esta listo";
-
-            } else if (input.matches("^(exit)$")){
-               closeWindow();
-
-            } else {
-                return "Horrible input";
-            }
-        }
     }
 
     /**
@@ -111,6 +72,10 @@ public class InputArea extends JPanel implements ActionListener {
         //Display the window.
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public String getInputString() {
+      return textField.getText();
     }
 
     public static void main(String[] args) {
