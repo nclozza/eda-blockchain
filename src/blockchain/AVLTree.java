@@ -115,25 +115,26 @@ public class AVLTree<T extends Comparable<? super T>> {
      *      already having an existing node with such data in the tree.
      */
     private Node<T> insertR(Node<T> currentNode, T data) throws DuplicateNodeInsertException {
-        if (data.compareTo(currentNode.getData()) < 0) {
+
+        if (data.compareTo(currentNode.getData()) < 0) { // Has to be inserted in the left subtree.
             if (currentNode.getLeft() == null) {
-                Node<T> newNode = new Node(data);
+                Node<T> newNode = new Node<>(data);
 
                 currentNode.setLeft(newNode);
 
-                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list
-                modifiedNodesList.add(currentNode);        // Node has a new child, therefore it is also added to modifiedNodesList
+                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list.
+                modifiedNodesList.add(currentNode); // Node has a new child, therefore it is also added to modifiedNodesList.
             } else {
                 currentNode.setLeft(insertR(currentNode.getLeft(), data));
             }
-        } else if (data.compareTo(currentNode.getData()) > 0) {
+        } else if (data.compareTo(currentNode.getData()) > 0) { // Has to be inserted in the right subtree.
             if (currentNode.getRight() == null) {
-                Node<T> newNode = new Node(data);
+                Node<T> newNode = new Node<>(data);
 
                 currentNode.setRight(newNode);
 
-                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list
-                modifiedNodesList.add(currentNode);        // Node has a new child, therefore it is also added to modifiedNodesList
+                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list.
+                modifiedNodesList.add(currentNode); // Node has a new child, therefore it is also added to modifiedNodesList.
             } else {
                 currentNode.setRight(insertR(currentNode.getRight(), data));
             }
@@ -393,11 +394,11 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @param root  The root/header of the subtree that is to be printed by level.
      */
     public void byLevel(Node<T> root) {
-        Queue<Node> level = new LinkedList<>();
+        Queue<Node<T>> level = new LinkedList<>();
         level.add(root);
 
         while (!level.isEmpty()) {
-            Node node = level.poll();
+            Node<T> node = level.poll();
 
             System.out.print(node.getData().toString() + " ");
 
