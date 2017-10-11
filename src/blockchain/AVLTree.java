@@ -3,7 +3,7 @@ package blockchain;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class AVLTree<T extends Comparable<? super T>> {
+public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     /**
      * The header represents the root of the tree.
      */
@@ -24,6 +24,11 @@ public class AVLTree<T extends Comparable<? super T>> {
      */
     public AVLTree(T data) {
         header = new Node<T>(data);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     /**
