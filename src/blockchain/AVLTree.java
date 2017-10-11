@@ -39,7 +39,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Getter function for the root node of the AVL tree.
+     * Getter method for the root node of the AVL tree.
      * @return  The root node, in this case the header.
      */
     public Node<T> getRoot() {
@@ -59,7 +59,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Looks for a node containing the specified data calling the recursive function containsR.
+     * Looks for a node containing the specified data calling the recursive method containsR.
      * @param data  Data to be found contained in a node.
      * @return  True if the node containing the data is found, false otherwise.
      */
@@ -87,7 +87,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Inserts a new node with the specified data. Calls a private recursive insert function to look for the proper
+     * Inserts a new node with the specified data. Calls a private recursive insert method to look for the proper
      * place to insert the new node.
      * @param data  The data that will be in the new node to be inserted.
      * @return  The list of nodes that were modified by the insertion.
@@ -107,7 +107,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Recursive function which looks for the proper place to insert a new node with the specified data in the tree.
+     * Recursive method which looks for the proper place to insert a new node with the specified data in the tree.
      * @param currentNode   Node that works as a reference to know where to insert the new node.
      * @param data  The data that will be in the new node to be inserted.
      * @return  The root/header of the subtree that was affected by the node's insertion.
@@ -169,8 +169,8 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Recursive function responsible of finding a node with the specified data and deleting it through the
-     * deleteFoundNode() function. After having deleted the node it will set the new height and balance the subtree from
+     * Recursive method responsible of finding a node with the specified data and deleting it through the
+     * deleteFoundNode() method. After having deleted the node it will set the new height and balance the subtree from
      * where the node was deleted until the root is reached.
      * @param data  The data of the node to be deleted.
      * @param node  The current node whose data is to be compared with the specified data to check if it is to be deleted.
@@ -255,7 +255,7 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Function to get the highest valued node from the subtree of which the specified node is the root/header.
+     * Method to get the highest valued node from the subtree of which the specified node is the root/header.
      * @param root  The root from which to start the search for the highest valued node in the subtree.
      * @return  The highest valued node in the subtree.
      */
@@ -413,39 +413,90 @@ public class AVLTree<T extends Comparable<? super T>> {
     }
 
     /**
-     * Prints the tree in pre-order traversal.
-     * @param node  The node whose content is to be printed in the context of the pre-order traversal.
+     * Method that represents the the entire AVL tree in a String in pre-order traversal. This method serves a
+     * wrapper method for the actual recursive method (preOrderR) that travels along the tree to concatenate each
+     * node's data.
+     * @return  A String of the pre-order traversal of the subtree, each node's content is separated by a space.
      */
-    public void preOrder(Node<T> node) {
-        if (node != null) {
-            System.out.print(node.getData().toString() + " ");
-            preOrder(node.getLeft());
-            preOrder(node.getRight());
-        }
+    public String preOrder() {
+        return preOrderR(header);
     }
 
     /**
-     * Prints the tree in in-order traversal.
-     * @param node  The node whose content is to be printed in the context of the in-order traversal.
+     * Recursive method that represents the subtree that has the specified node as its root/header in a String in
+     * pre-order traversal.
+     * @param node  The node that is root/header of the subtree that is to be converted into a String in pre-order
+     *              traversal.
+     * @return  A String of the pre-order traversal of the subtree, each node's content is separated by a space.
      */
-    public void inOrder(Node<T> node) {
+    private String preOrderR(Node<T> node) {
+        String ret = "";
+
         if (node != null) {
-            inOrder(node.getLeft());
-            System.out.println(node.getData().toString() + " ");
-            inOrder(node.getRight());
+            ret = ret.concat(node.getData().toString() + " ");
+            ret = ret.concat(preOrderR(node.getLeft()));
+            ret = ret.concat(preOrderR(node.getRight()));
         }
+
+        return ret;
     }
 
     /**
-     * Prints the tree in post-order traversal.
-     * @param node  The node whose content is to be printed in the context of the post-order traversal.
+     * Method that represents the the entire AVL tree in a String in in-order traversal. This method serves a
+     * wrapper method for the actual recursive method (inOrderR) that travels along the tree to concatenate each
+     * node's data.
+     * @return  A String of the in-order traversal of the subtree, each node's content is separated by a space.
      */
-    public void postOrder(Node<T> node) {
+    public String inOrder() {
+        return inOrderR(header);
+    }
+
+    /**
+     * Recursive method that represents the subtree that has the specified node as its root/header in a String in
+     * in-order traversal.
+     * @param node  The node that is root/header of the subtree that is to be converted into a String in in-order
+     *              traversal.
+     * @return  A String of the in-order traversal of the subtree, each node's content is separated by a space.
+     */
+    private String inOrderR(Node<T> node) {
+        String ret = "";
+
         if (node != null) {
-            inOrder(node.getLeft());
-            inOrder(node.getRight());
-            System.out.println(node.getData().toString() + " ");
+            ret = ret.concat(inOrderR(node.getLeft()));
+            ret = ret.concat(node.getData().toString() + " ");
+            ret = ret.concat(inOrderR(node.getRight()));
         }
+
+        return ret;
+    }
+
+    /**
+     * Method that represents the the entire AVL tree in a String in post-order traversal. This method serves a
+     * wrapper method for the actual recursive method (postOrderR) that travels along the tree to concatenate each
+     * node's data.
+     * @return  A String of the post-order traversal of the subtree, each node's content is separated by a space.
+     */
+    public String postOrder() {
+        return postOrderR(header);
+    }
+
+    /**
+     * Recursive method that represents the subtree that has the specified node as its root/header in a String in
+     * post-order traversal.
+     * @param node  The node that is root/header of the subtree that is to be converted into a String in post-order
+     *              traversal.
+     * @return  A String of the post-order traversal of the subtree, each node's content is separated by a space.
+     */
+    private String postOrderR(Node<T> node) {
+        String ret = "";
+
+        if (node != null) {
+            ret = ret.concat(postOrderR(node.getLeft()));
+            ret = ret.concat(node.getData().toString() + " ");
+            ret = ret.concat(postOrderR(node.getRight()));
+        }
+
+        return ret;
     }
 
     // THIS IS A TEMPORARY IMPLEMENTATION, WE NEED TO CHANGE THIS
