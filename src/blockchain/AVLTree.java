@@ -3,6 +3,9 @@ package blockchain;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * The AVLTree class is an implementation of an AVL tree with changes made to suit the Blockchain implementation.
+ */
 public class AVLTree<T extends Comparable<? super T>> {
     /**
      * The header represents the root of the tree.
@@ -15,6 +18,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      * getModifiedNodesList method.
      */
     private LinkedList<Node<T>> modifiedNodesList = null;
+
 
     /**
      * Creates an instance of the AVLTree class which should represent an AVL tree. Said instance has the specified data
@@ -442,41 +446,6 @@ public class AVLTree<T extends Comparable<? super T>> {
             System.out.println(node.getData().toString() + " ");
         }
     }
-
-    /*
-    /**
-     * Looks for a node containing the specified data and returns a list of all the block's index that modified such
-     * node. It is understood by "modification" the insertion of the node, the rotation of the node or the replacement
-     * of one or both of the node's children by any certain operation. The function calls for a more specific
-     * recursive function lookUpR for an easier search of the node containing the specified data.
-     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
-     * @return  A list with all the block's index that modified the node containing the specified data.
-     */
-    /*public LinkedList<Integer> lookUp(T data, HashMap<T, LinkedList<Integer>> modifiedNodesMap){
-        return lookUpR(data, header, modifiedNodesMap);
-    }*/
-
-    /*
-    /**
-     * Recursive function called by lookUp that serves the same purpose as its caller.
-     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
-     * @param node  The node to be used for a recursive search of the node containing the specified data.
-     * @return  A list with all the block's index that modified the node containing the specified data.
-     */
-    /*private LinkedList<Integer> lookUpR(T data, Node<T> node, HashMap<T, LinkedList<Integer>> modifiedNodesMap) {
-        if (node == null) {
-            return null;
-        }
-
-        if (data.compareTo(node.getData()) < 0){
-            return lookUpR(data, node.getLeft(), modifiedNodesMap);
-        } else if (data.compareTo(node.getData()) > 0){
-            return lookUpR(data, node.getRight(), modifiedNodesMap);
-        }
-
-        return modifiedNodesMap.get(data);
-    }*/
-
 
     // THIS IS A TEMPORARY IMPLEMENTATION, WE NEED TO CHANGE THIS
     public String toStringForHash() {
