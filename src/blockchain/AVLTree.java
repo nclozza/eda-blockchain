@@ -419,7 +419,14 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return  A String of the pre-order traversal of the subtree, each node's content is separated by a space.
      */
     public String preOrder() {
-        return preOrderR(header);
+        String ret = postOrderR(header);
+        int length = ret.length();
+
+        if (length == 0) {
+            return ret;
+        }
+
+        return ret.substring(0, length - 1);      // Getting rid of the last space in the string.
     }
 
     /**
@@ -448,7 +455,14 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return  A String of the in-order traversal of the subtree, each node's content is separated by a space.
      */
     public String inOrder() {
-        return inOrderR(header);
+        String ret = inOrderR(header);
+        int length = ret.length();
+
+        if (length == 0) {
+            return ret;
+        }
+
+        return ret.substring(0, length - 1);      // Getting rid of the last space in the string.
     }
 
     /**
@@ -477,7 +491,14 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return  A String of the post-order traversal of the subtree, each node's content is separated by a space.
      */
     public String postOrder() {
-        return postOrderR(header);
+        String ret = postOrderR(header);
+        int length = ret.length();
+
+        if (length == 0) {
+            return ret;
+        }
+
+        return ret.substring(0, length - 1);      // Getting rid of the last space in the string.
     }
 
     /**
@@ -499,8 +520,37 @@ public class AVLTree<T extends Comparable<? super T>> {
         return ret;
     }
 
-    // THIS IS A TEMPORARY IMPLEMENTATION, WE NEED TO CHANGE THIS
+    /**
+     * Transforms this tree into a String that can be used to get a hashCode for the tree.
+     * @return  String that represents the tree in pre-order traversal.
+     */
     public String toStringForHash() {
-        return this.toString();
+        return preOrder();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (!obj.getClass().equals(AVLTree.class)) {
+            return false;
+        }
+
+        if (obj.hashCode() != this.hashCode()) {
+            return false;
+        }
+
+        if (!((AVLTree)obj).getRoot().equals(this.getRoot())) {
+            return false;
+        }
+
+        return ((AVLTree) obj).preOrder().equals(this.preOrder());
+    }
+
+    @Override
+    public int hashCode() {
+        return 53 * preOrder().hashCode();
     }
 }
