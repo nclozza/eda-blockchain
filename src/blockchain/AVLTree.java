@@ -533,7 +533,10 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     public String toStringForHash() {
         return preOrder();
     }
-    
+
+    /**
+     * Two instances of the AVLTree class are equal if their pre-order representation is the same.
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
