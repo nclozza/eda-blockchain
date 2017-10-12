@@ -6,7 +6,8 @@ import java.util.Queue;
 /**
  * The AVLTree class is an implementation of an AVL tree with changes made to suit the Blockchain implementation.
  */
-public class AVLTree<T extends Comparable<? super T>> {
+public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
+
     /**
      * The header represents the root of the tree.
      */
@@ -28,6 +29,11 @@ public class AVLTree<T extends Comparable<? super T>> {
      */
     public AVLTree(T data) {
         header = new Node<T>(data);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     /**
@@ -419,7 +425,7 @@ public class AVLTree<T extends Comparable<? super T>> {
      * @return  A String of the pre-order traversal of the subtree, each node's content is separated by a space.
      */
     public String preOrder() {
-        String ret = postOrderR(header);
+        String ret = preOrderR(header);
         int length = ret.length();
 
         if (length == 0) {
@@ -440,9 +446,9 @@ public class AVLTree<T extends Comparable<? super T>> {
         String ret = "";
 
         if (node != null) {
-            ret = ret.concat(node.getData().toString() + " ");
-            ret = ret.concat(preOrderR(node.getLeft()));
-            ret = ret.concat(preOrderR(node.getRight()));
+            ret += node.getData().toString() + " ";
+            ret += preOrderR(node.getLeft());
+            ret += preOrderR(node.getRight());
         }
 
         return ret;

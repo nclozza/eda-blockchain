@@ -11,7 +11,6 @@ public class Block<T> {
     private String hash;
     private String previousBlockHash;
 
-
     public Block(int index, Data<T> data, String previousBlockHash, int zeros) {
         this.index = index;
         this.data = data;
@@ -20,27 +19,27 @@ public class Block<T> {
     }
 
     public int getIndex() {
-      return index;
+        return index;
     }
 
     public int getNonce() {
-      return nonce;
+        return nonce;
     }
 
     public Data<T> getData() {
-      return data;
+        return data;
     }
 
     public String getHash() {
-      return hash;
+        return hash;
     }
 
     public String getPreviousBlockHash() {
-      return previousBlockHash;
+        return previousBlockHash;
     }
 
     public String toStringForHash() {
-      return index + nonce + data.toStringForHash() + previousBlockHash;
+        return index + nonce + data.toStringForHash() + previousBlockHash;
     }
 
     private void setNonceAndHash(int zeros) {
@@ -56,6 +55,13 @@ public class Block<T> {
         this.hash = auxHash;
     }
 
+    /**
+     * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
+     */
+    public void modifyBlock(int zeros) {
+        this.setNonceAndHash(zeros);
+    }
+  
     /**
      * Two instances of the Block class are equal if all of their parameters except their nonce is equal.
      */
