@@ -62,17 +62,17 @@ public class Blockchain<T extends Comparable<? super T>> {
    */
   public void modifyBlock(int blockNumber, T dataValue) {
     String operation = blockchain.get(blockchain.size() - blockNumber - 1).getData().getOperation().oprationClass();
-    blockchain.set(blockchain.size() - blockNumber - 1, this.newBlock(dataValue, true, operation));
+
+    Block<T> auxBlock = blockchain.get(blockchain.size() - blockNumber - 1);
+    auxBlock.getData().getOperation().modifyOperation(dataValue);
+
+    blockchain.set(blockchain.size() - blockNumber - 1, new Block<>(blockchain.size() - blockNumber - 1, auxBlock.getData(), auxBlock.getPreviousBlockHash(), zeros));
   }
 
   public void addNewBlock(T element, boolean status, String operation) throws InvalidBlockchainStatus {
     if (!this.checkBlockchainStatus()) {
       throw new InvalidBlockchainStatus();
     }
-    blockchain.addFirst(this.newBlock(element, status, operation));
-  }
-
-  private Block<T> newBlock(T element, boolean status, String operation) {
     Operation<T> newOperation = new Add<>(element, status);
     switch (operation) {
       case "Add":
@@ -95,7 +95,7 @@ public class Blockchain<T extends Comparable<? super T>> {
       previousBlockHash = blockchain.getFirst().getHash();
     }
     Block<T> block = new Block<>(blockchain.size(), data, previousBlockHash, zeros);
-    return block;
+    blockchain.addFirst(block);
   }
 
 }
