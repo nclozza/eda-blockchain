@@ -1,7 +1,7 @@
 package blockchain;
 
 /**
- * Created by lucas_sg on 10/9/17.
+ * The NodeNotFoundException is thrown whenever a user tries to delete or search for an unexisting node in the tree.
  */
 public class NodeNotFoundException extends Exception {
     public NodeNotFoundException() {}
