@@ -3,7 +3,11 @@ package blockchain;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * The AVLTree class is an implementation of an AVL tree with changes made to suit the Blockchain implementation.
+ */
 public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
+
     /**
      * The header represents the root of the tree.
      */
@@ -15,6 +19,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
      * getModifiedNodesList method.
      */
     private LinkedList<Node<T>> modifiedNodesList = null;
+
 
     /**
      * Creates an instance of the AVLTree class which should represent an AVL tree. Said instance has the specified data
@@ -40,7 +45,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     }
 
     /**
-     * Getter function for the root node of the AVL tree.
+     * Getter method for the root node of the AVL tree.
      * @return  The root node, in this case the header.
      */
     public Node<T> getRoot() {
@@ -60,7 +65,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     }
 
     /**
-     * Looks for a node containing the specified data calling the recursive function containsR.
+     * Looks for a node containing the specified data calling the recursive method containsR.
      * @param data  Data to be found contained in a node.
      * @return  True if the node containing the data is found, false otherwise.
      */
@@ -88,7 +93,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     }
 
     /**
-     * Inserts a new node with the specified data. Calls a private recursive insert function to look for the proper
+     * Inserts a new node with the specified data. Calls a private recursive insert method to look for the proper
      * place to insert the new node.
      * @param data  The data that will be in the new node to be inserted.
      * @return  The list of nodes that were modified by the insertion.
@@ -108,7 +113,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     }
 
     /**
-     * Recursive function which looks for the proper place to insert a new node with the specified data in the tree.
+     * Recursive method which looks for the proper place to insert a new node with the specified data in the tree.
      * @param currentNode   Node that works as a reference to know where to insert the new node.
      * @param data  The data that will be in the new node to be inserted.
      * @return  The root/header of the subtree that was affected by the node's insertion.
@@ -116,25 +121,26 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
      *      already having an existing node with such data in the tree.
      */
     private Node<T> insertR(Node<T> currentNode, T data) throws DuplicateNodeInsertException {
-        if (data.compareTo(currentNode.getData()) < 0) {
+
+        if (data.compareTo(currentNode.getData()) < 0) { // Has to be inserted in the left subtree.
             if (currentNode.getLeft() == null) {
-                Node<T> newNode = new Node(data);
+                Node<T> newNode = new Node<>(data);
 
                 currentNode.setLeft(newNode);
 
-                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list
-                modifiedNodesList.add(currentNode);        // Node has a new child, therefore it is also added to modifiedNodesList
+                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list.
+                modifiedNodesList.add(currentNode); // Node has a new child, therefore it is also added to modifiedNodesList.
             } else {
                 currentNode.setLeft(insertR(currentNode.getLeft(), data));
             }
-        } else if (data.compareTo(currentNode.getData()) > 0) {
+        } else if (data.compareTo(currentNode.getData()) > 0) { // Has to be inserted in the right subtree.
             if (currentNode.getRight() == null) {
-                Node<T> newNode = new Node(data);
+                Node<T> newNode = new Node<>(data);
 
                 currentNode.setRight(newNode);
 
-                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list
-                modifiedNodesList.add(currentNode);        // Node has a new child, therefore it is also added to modifiedNodesList
+                modifiedNodesList.add(newNode);     // The new leaf is added to the modifiedNodesList list.
+                modifiedNodesList.add(currentNode); // Node has a new child, therefore it is also added to modifiedNodesList.
             } else {
                 currentNode.setRight(insertR(currentNode.getRight(), data));
             }
@@ -169,8 +175,8 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     }
 
     /**
-     * Recursive function responsible of finding a node with the specified data and deleting it through the
-     * deleteFoundNode() function. After having deleted the node it will set the new height and balance the subtree from
+     * Recursive method responsible of finding a node with the specified data and deleting it through the
+     * deleteFoundNode() method. After having deleted the node it will set the new height and balance the subtree from
      * where the node was deleted until the root is reached.
      * @param data  The data of the node to be deleted.
      * @param node  The current node whose data is to be compared with the specified data to check if it is to be deleted.
@@ -255,7 +261,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     }
 
     /**
-     * Function to get the highest valued node from the subtree of which the specified node is the root/header.
+     * Method to get the highest valued node from the subtree of which the specified node is the root/header.
      * @param root  The root from which to start the search for the highest valued node in the subtree.
      * @return  The highest valued node in the subtree.
      */
@@ -394,11 +400,11 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
      * @param root  The root/header of the subtree that is to be printed by level.
      */
     public void byLevel(Node<T> root) {
-        Queue<Node> level = new LinkedList<>();
+        Queue<Node<T>> level = new LinkedList<>();
         level.add(root);
 
         while (!level.isEmpty()) {
-            Node node = level.poll();
+            Node<T> node = level.poll();
 
             System.out.print(node.getData().toString() + " ");
 
@@ -413,78 +419,144 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
     }
 
     /**
-     * Prints the tree in pre-order traversal.
-     * @param node  The node whose content is to be printed in the context of the pre-order traversal.
+     * Method that represents the the entire AVL tree in a String in pre-order traversal. This method serves a
+     * wrapper method for the actual recursive method (preOrderR) that travels along the tree to concatenate each
+     * node's data.
+     * @return  A String of the pre-order traversal of the subtree, each node's content is separated by a space.
      */
-    public void preOrder(Node<T> node) {
-        if (node != null) {
-            System.out.print(node.getData().toString() + " ");
-            preOrder(node.getLeft());
-            preOrder(node.getRight());
+    public String preOrder() {
+        String ret = postOrderR(header);
+        int length = ret.length();
+
+        if (length == 0) {
+            return ret;
         }
+
+        return ret.substring(0, length - 1);      // Getting rid of the last space in the string.
     }
 
     /**
-     * Prints the tree in in-order traversal.
-     * @param node  The node whose content is to be printed in the context of the in-order traversal.
+     * Recursive method that represents the subtree that has the specified node as its root/header in a String in
+     * pre-order traversal.
+     * @param node  The node that is root/header of the subtree that is to be converted into a String in pre-order
+     *              traversal.
+     * @return  A String of the pre-order traversal of the subtree, each node's content is separated by a space.
      */
-    public void inOrder(Node<T> node) {
+    private String preOrderR(Node<T> node) {
+        String ret = "";
+
         if (node != null) {
-            inOrder(node.getLeft());
-            System.out.println(node.getData().toString() + " ");
-            inOrder(node.getRight());
+            ret = ret.concat(node.getData().toString() + " ");
+            ret = ret.concat(preOrderR(node.getLeft()));
+            ret = ret.concat(preOrderR(node.getRight()));
         }
+
+        return ret;
     }
 
     /**
-     * Prints the tree in post-order traversal.
-     * @param node  The node whose content is to be printed in the context of the post-order traversal.
+     * Method that represents the the entire AVL tree in a String in in-order traversal. This method serves a
+     * wrapper method for the actual recursive method (inOrderR) that travels along the tree to concatenate each
+     * node's data.
+     * @return  A String of the in-order traversal of the subtree, each node's content is separated by a space.
      */
-    public void postOrder(Node<T> node) {
-        if (node != null) {
-            inOrder(node.getLeft());
-            inOrder(node.getRight());
-            System.out.println(node.getData().toString() + " ");
+    public String inOrder() {
+        String ret = inOrderR(header);
+        int length = ret.length();
+
+        if (length == 0) {
+            return ret;
         }
+
+        return ret.substring(0, length - 1);      // Getting rid of the last space in the string.
     }
 
-    /*
     /**
-     * Looks for a node containing the specified data and returns a list of all the block's index that modified such
-     * node. It is understood by "modification" the insertion of the node, the rotation of the node or the replacement
-     * of one or both of the node's children by any certain operation. The function calls for a more specific
-     * recursive function lookUpR for an easier search of the node containing the specified data.
-     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
-     * @return  A list with all the block's index that modified the node containing the specified data.
+     * Recursive method that represents the subtree that has the specified node as its root/header in a String in
+     * in-order traversal.
+     * @param node  The node that is root/header of the subtree that is to be converted into a String in in-order
+     *              traversal.
+     * @return  A String of the in-order traversal of the subtree, each node's content is separated by a space.
      */
-    /*public LinkedList<Integer> lookUp(T data, HashMap<T, LinkedList<Integer>> modifiedNodesMap){
-        return lookUpR(data, header, modifiedNodesMap);
-    }*/
+    private String inOrderR(Node<T> node) {
+        String ret = "";
 
-    /*
-    /**
-     * Recursive function called by lookUp that serves the same purpose as its caller.
-     * @param data  The data contained by the node whose list of block's index that modified it is asked for.
-     * @param node  The node to be used for a recursive search of the node containing the specified data.
-     * @return  A list with all the block's index that modified the node containing the specified data.
-     */
-    /*private LinkedList<Integer> lookUpR(T data, Node<T> node, HashMap<T, LinkedList<Integer>> modifiedNodesMap) {
-        if (node == null) {
-            return null;
+        if (node != null) {
+            ret = ret.concat(inOrderR(node.getLeft()));
+            ret = ret.concat(node.getData().toString() + " ");
+            ret = ret.concat(inOrderR(node.getRight()));
         }
 
-        if (data.compareTo(node.getData()) < 0){
-            return lookUpR(data, node.getLeft(), modifiedNodesMap);
-        } else if (data.compareTo(node.getData()) > 0){
-            return lookUpR(data, node.getRight(), modifiedNodesMap);
+        return ret;
+    }
+
+    /**
+     * Method that represents the the entire AVL tree in a String in post-order traversal. This method serves a
+     * wrapper method for the actual recursive method (postOrderR) that travels along the tree to concatenate each
+     * node's data.
+     * @return  A String of the post-order traversal of the subtree, each node's content is separated by a space.
+     */
+    public String postOrder() {
+        String ret = postOrderR(header);
+        int length = ret.length();
+
+        if (length == 0) {
+            return ret;
         }
 
-        return modifiedNodesMap.get(data);
-    }*/
+        return ret.substring(0, length - 1);      // Getting rid of the last space in the string.
+    }
 
+    /**
+     * Recursive method that represents the subtree that has the specified node as its root/header in a String in
+     * post-order traversal.
+     * @param node  The node that is root/header of the subtree that is to be converted into a String in post-order
+     *              traversal.
+     * @return  A String of the post-order traversal of the subtree, each node's content is separated by a space.
+     */
+    private String postOrderR(Node<T> node) {
+        String ret = "";
 
-    // THIS IS A TEMPORARY IMPLEMENTATION, WE NEED TO CHANGE THIS
+        if (node != null) {
+            ret = ret.concat(postOrderR(node.getLeft()));
+            ret = ret.concat(node.getData().toString() + " ");
+            ret = ret.concat(postOrderR(node.getRight()));
+        }
+
+        return ret;
+    }
+
+    /**
+     * Transforms this tree into a String that can be used to get a hashCode for the tree.
+     * @return  String that represents the tree in pre-order traversal.
+     */
     public String toStringForHash() {
-        return this.toString();
+        return preOrder();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (!obj.getClass().equals(AVLTree.class)) {
+            return false;
+        }
+
+        if (obj.hashCode() != this.hashCode()) {
+            return false;
+        }
+
+        if (!((AVLTree)obj).getRoot().equals(this.getRoot())) {
+            return false;
+        }
+
+        return ((AVLTree) obj).preOrder().equals(this.preOrder());
+    }
+
+    @Override
+    public int hashCode() {
+        return 53 * preOrder().hashCode();
     }
 }
