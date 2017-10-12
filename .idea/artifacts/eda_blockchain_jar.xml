@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="eda-blockchain:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/eda_blockchain_jar</output-path>
+    <root id="archive" name="eda-blockchain.jar">
+      <element id="module-output" name="eda-blockchain" />
+    </root>
+  </artifact>
+</component>
