@@ -17,6 +17,10 @@ public class Blockchain<T extends Comparable<? super T>> {
     this.blockchain = new LinkedList<>();
   }
 
+  public LinkedList<Block<T>> getBlockchain() {
+    return blockchain;
+  }
+
   public boolean checkBlockchainStatus() {
     if (blockchain.size() == 0 || blockchain.size() == 1) {
       return true;
@@ -32,6 +36,10 @@ public class Blockchain<T extends Comparable<? super T>> {
     } while (previous.hasNext());
 
     return true;
+  }
+
+  public void updateAVL(AVLTree<T> avl){
+    this.avlTree = avl;
   }
 
   public void setZeros(int zeros) {

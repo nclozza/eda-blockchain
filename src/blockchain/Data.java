@@ -7,7 +7,11 @@ public class Data<T> {
 
   public Data(Operation<T> operation, AVLTree<? super T> avlTree) {
     this.operation = operation;
-    this.avlTree = avlTree;
+    try {
+      this.avlTree = (AVLTree<? super T>) avlTree.clone();
+    }catch (CloneNotSupportedException e){
+      System.out.println("CLONE NOT SUPPORTED");
+    }
   }
 
   public Operation<T> getOperation() {
