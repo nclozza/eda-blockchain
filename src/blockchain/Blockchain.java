@@ -3,13 +3,32 @@ package blockchain;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * The Blockchain class is an implementation of a blockchain used to store operations made upon an AVL tree in every
+ * block. One of its properties is the blockchain itself which is a list of blocks. The Block class implementation is
+ * set as an inner private class of the blockchain which can be seen below.
+ */
 public class Blockchain<T extends Comparable<? super T>> {
-
+    /**
+     * The hash reference to the previous block of the first block.
+     */
     private static String genesisHash = "0000000000000000000000000000000000000000000000000000000000000000";
-
+    /**
+     * The blockchain stores a reference to the last state of the AVL tree to let every user have access to it. If a
+     * user wants to have access to an earlier stage of the AVL tree they can travel across the blockchain through its
+     * blocks, which have the hash to the corresponding state of the AVL tree after the operation that is stored within
+     * the block.
+     */
     private AVLTree<T> avlTree;
+    /**
+     * The actual blockchain that consists of a list of blocks.
+     */
     private LinkedList<Block<T>> blockchain;
+    /**
+     * The amount of zeros used for the hash.
+     */
     private int zeros;
+
 
     public Blockchain() {
         this.avlTree = new AVLTree<>();
@@ -20,6 +39,10 @@ public class Blockchain<T extends Comparable<? super T>> {
         return blockchain;
     }
 
+    /**
+     * Checks if the hash of the current block that references to the previous block is equal to the hash of said block.
+     * @return  True if the hash references of both blocks match, false otherwise.
+     */
     public boolean checkBlockchainStatus() {
         if (blockchain.size() == 0 || blockchain.size() == 1) {
             return true;
@@ -50,17 +73,25 @@ public class Blockchain<T extends Comparable<? super T>> {
         return blockchain.getFirst().getHash();
     }
 
-    public int getActualBlockNumber() {
+    /**
+     * Indicates the index of the current block.
+     * @return  The index of the current block.
+     */
+    public int getCurrentBlockNumber() {
         return blockchain.size();
     }
 
+    /**
+     * Indicates the size of the blockchain which is to say the amount of blocks in it.
+     * @return  The amount of blocks in the blockchain.
+     */
     public int getBlockchainSize() {
         return blockchain.size();
     }
 
     /**
-    * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
-    */
+     * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
+     */
     public void modifyBlock(int blockNumber, T dataValue) {
         String operation = blockchain.get(blockchain.size() - blockNumber - 1).getData().getOperation().oprationClass();
 
@@ -72,6 +103,15 @@ public class Blockchain<T extends Comparable<? super T>> {
                         zeros));
     }
 
+    /**
+     * Adds a new block to the blockchain. The block will consist of the operation made upon the tree, the element that
+     * is passed to the operation method, and the status which indicates if the operation was done successfully.
+     * @param element   The element that will be passed to the operation method.
+     * @param status    The status of the operation, true if it was done successfully, false otherwise.
+     * @param operation The operation to be done upon the tree.
+     * @throws InvalidBlockchainStatus if the the references between two blocks do not match (see checkBlockchainStatus
+     *         method for further reference)
+     */
     public void addNewBlock(T element, boolean status, String operation) throws InvalidBlockchainStatus {
         if (!this.checkBlockchainStatus()) {
             throw new InvalidBlockchainStatus();
@@ -79,14 +119,8 @@ public class Blockchain<T extends Comparable<? super T>> {
 
         Operation<T> newOperation = new Add<>(element, status);
 
-        switch (operation) {
-            case "Add":
-                new Remove<>(element, status);
-            break;
-
-            case "Remove":
-                newOperation = new Remove<>(element, status);
-            break;
+        if (operation.equals("Remove")) {
+            newOperation = new Remove<>(element, status);
         }
 
         Data<T> data = new Data<>(newOperation, SHA256.getInstance().hash(avlTree.toStringForHash()));
@@ -105,9 +139,10 @@ public class Blockchain<T extends Comparable<? super T>> {
     }
 
     /**
-    * The Block class is the implementation of a block in a blockchain that contains an index, a nonce to set the amount of
-    * zeros that will be used to check the hash, data contained in the block, its hash and the hash of the previous block.
-    */
+     * The Block class is the implementation of a block in a blockchain that contains an index, a nonce to set the
+     * amount of zeros that will be used to check the hash, data contained in the block, its hash and the hash of the
+     * previous block.
+     */
     private static class Block<T> {
         private int index;
         private int nonce;
@@ -115,34 +150,34 @@ public class Blockchain<T extends Comparable<? super T>> {
         private String hash;
         private String previousBlockHash;
 
-        public Block(int index, Data<T> data, String previousBlockHash, int zeros) {
+        private Block(int index, Data<T> data, String previousBlockHash, int zeros) {
             this.index = index;
             this.data = data;
             this.previousBlockHash = previousBlockHash;
             this.setNonceAndHash(zeros);
         }
 
-        public int getIndex() {
+        private int getIndex() {
             return index;
         }
 
-        public int getNonce() {
+        private int getNonce() {
             return nonce;
         }
 
-        public Data<T> getData() {
+        private Data<T> getData() {
             return data;
         }
 
-        public String getHash() {
+        private String getHash() {
             return hash;
         }
 
-        public String getPreviousBlockHash() {
+        private String getPreviousBlockHash() {
             return previousBlockHash;
         }
 
-        public String toStringForHash() {
+        private String toStringForHash() {
             return index + nonce + data.toStringForHash() + previousBlockHash;
         }
 
@@ -161,15 +196,15 @@ public class Blockchain<T extends Comparable<? super T>> {
         }
 
         /**
-        * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
-        */
-        public void modifyBlock(int zeros) {
-          this.setNonceAndHash(zeros);
+         * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
+         */
+        private void modifyBlock(int zeros) {
+            this.setNonceAndHash(zeros);
         }
 
         /**
-        * Two instances of the Block class are equal if all of their parameters except their nonce is equal.
-        */
+         * Two instances of the Block class are equal if all of their parameters except their nonce is equal.
+         */
         @Override
         public boolean equals(Object obj) {
           if (obj == null) {
