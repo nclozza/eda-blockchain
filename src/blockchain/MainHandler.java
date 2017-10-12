@@ -61,7 +61,9 @@ public class MainHandler {
               avlTree.insert(aux);
               System.out.println("Se agrego correctamente el nodo: " + aux);
               try {
+                blockchain.updateAVL(this.avlTree);
                 blockchain.add(aux, true);
+//                blockchain.updateAVL(this.avlTree);
                 System.out.println("Generando hash del bloque, esto puede demorar.");
                 System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
 
@@ -133,7 +135,11 @@ public class MainHandler {
             System.out.println("Horrible input");
           }
 
-          binaryTreeView.refresh(avlTree.getRoot());
+          //DELETE LINEA 139 AND 140 AND DECOMMENT LINE 142 WHEN MERGING
+          System.out.println(this.avlTree == this.blockchain.getBlockchain().getFirst().getData().getAvlTree());
+          binaryTreeView.refresh((Node<Integer>) this.blockchain.getBlockchain().getFirst().getData().getAvlTree().getRoot());
+
+//          binaryTreeView.refresh(avlTree.getRoot());
         }
       }
 

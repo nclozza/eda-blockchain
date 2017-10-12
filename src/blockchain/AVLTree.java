@@ -6,7 +6,8 @@ import java.util.Queue;
 /**
  * The AVLTree class is an implementation of an AVL tree with changes made to suit the Blockchain implementation.
  */
-public class AVLTree<T extends Comparable<? super T>> {
+public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
+
     /**
      * The header represents the root of the tree.
      */
@@ -28,6 +29,11 @@ public class AVLTree<T extends Comparable<? super T>> {
      */
     public AVLTree(T data) {
         header = new Node<T>(data);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     /**
