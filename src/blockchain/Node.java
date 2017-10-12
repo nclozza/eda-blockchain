@@ -3,7 +3,8 @@ package blockchain;
 /**
  * The Node class is a representation of a node that has data stored in it and a reference to its right and left
  * children. There is also the height variable to store the height of the node in a tree instead of travelling through
- * the tree to obtain it. This class is the one used for the AVLTree implementation.
+ * the tree to obtain it. This class is the one used for the AVLTree implementation. It is not set as an inside class
+ * of the AVL tree because it is used in the graphical interface implementation.
  */
 public class Node<T> {
     private T data;
