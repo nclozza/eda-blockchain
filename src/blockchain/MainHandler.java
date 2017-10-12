@@ -3,24 +3,25 @@ package blockchain;
 import visual.BinaryTreeView;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainHandler {
 
   private static final String EXIT_COMMAND = "exit";
 
   private AVLTree<Integer> avlTree;
-  private Blockchain<Integer> blockchain;
-  private HashMap<Integer, LinkedList<Integer>> hashMap;
   private BinaryTreeView<Integer> binaryTreeView;
+  private Server<Integer> server;
+  private User<Integer> user;
 
   public MainHandler() {
+    this.server = new Server<>();
+    this.user = new User<>();
     this.avlTree = new AVLTree<>();
-    this.blockchain = new Blockchain<>();
-    this.hashMap = new HashMap<>();
     try {
-      this.binaryTreeView = new BinaryTreeView<Integer>(avlTree.getRoot(), 500, 500);
+      this.binaryTreeView = new BinaryTreeView<>(avlTree.getRoot(), 500, 500);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -37,9 +38,9 @@ public class MainHandler {
           System.out.print("Ingrese la cantidad de ceros: ");
           input = ConsoleReader.readingFromConsole();
 
-          if (input.matches("^\\d*$")) {
-            Integer aux = Integer.parseInt(input.substring(0));
-            blockchain.setZeros(aux);
+          if (input.matches("^\\d+$")) {
+            Integer aux = Integer.parseInt(input);
+            user.setZeros(aux);
             zerosSet = true;
             System.out.println("Blockchain inicializada con " + aux + " cero" + (aux == 0 || aux > 1 ? "s" : ""));
             System.out.println();
@@ -53,78 +54,112 @@ public class MainHandler {
 
           input = ConsoleReader.readingFromConsole();
 
-          if (input.matches("^(add\\s\\d*)$")) {
+          if (input.matches("^(add\\s\\d+)$")) {
             Integer aux = Integer.parseInt(input.substring(4));
             System.out.println("Agregando nodo: " + aux);
 
             try {
-              avlTree.insert(aux);
+              LinkedList<Node<Integer>> listOfModifiedNodes = avlTree.insert(aux);
+              server.setModifiedNodesByBlock(listOfModifiedNodes, user.getActualBlockNumber());
               System.out.println("Se agrego correctamente el nodo: " + aux);
-              try {
-                blockchain.updateAVL(this.avlTree);
-                blockchain.add(aux, true);
-//                blockchain.updateAVL(this.avlTree);
-                System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+              user.addNewBlock(aux, true, "Add");
+              AVLTree<Integer> auxAVLTree = (AVLTree<Integer>) avlTree.clone();
+              server.setAvlTreeState(SHA256.getInstance().hash(avlTree.toStringForHash()), auxAVLTree);
+              user.updateAVL(avlTree);
+              System.out.println("Generando hash del bloque, esto puede demorar.");
+              System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
-              } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-                System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
-              }
-
+            } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+              System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
+            } catch (CloneNotSupportedException e) {
+              System.out.println("No se pudo guardar el nuevo estado del AVL en el servidor");
             } catch (DuplicateNodeInsertException e) {
               System.out.println("No se pudo agregar, nodo ya existente");
               try {
-                blockchain.add(aux, false);
+                user.addNewBlock(aux, false, "Add");
                 System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
               } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
                 System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
               }
             }
 
-          } else if (input.matches("^(lookup\\s\\d*)$")) {
-            System.out.println("Buscaste un elemento");
-            Integer aux = Integer.parseInt(input.substring(7));
-            System.out.println("Voy a buscar este nodo: " + aux);
-
-          } else if (input.matches("^(remove\\s\\d*)$")) {
+          } else if (input.matches("^(remove\\s\\d+)$")) {
             Integer aux = Integer.parseInt(input.substring(7));
             System.out.println("Borrando nodo: " + aux);
 
             try {
-              avlTree.delete(aux);
+              LinkedList<Node<Integer>> listOfModifiedNodes = avlTree.delete(aux);
+              server.setModifiedNodesByBlock(listOfModifiedNodes, user.getActualBlockNumber());
               System.out.println("Se eliminó correctamente el nodo: " + aux);
-              try {
-                blockchain.add(aux, true);
-                System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+              user.addNewBlock(aux, true, "Remove");
+              AVLTree<Integer> auxAVLTree = (AVLTree<Integer>) avlTree.clone();
+              server.setAvlTreeState(SHA256.getInstance().hash(avlTree.toStringForHash()), auxAVLTree);
+              user.updateAVL(avlTree);
+              System.out.println("Generando hash del bloque, esto puede demorar.");
+              System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
-              } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-                System.out.println("La blockchain es inálida, no se pueden realizar operaciones\n");
-              }
-
+            } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+              System.out.println("La blockchain es inálida, no se pueden realizar operaciones\n");
+            } catch (CloneNotSupportedException e) {
+              System.out.println("No se pudo guardar el nuevo estado del AVL en el servidor");
             } catch (NodeNotFoundException e) {
               System.out.println("No se pudo eliminar, nodo inexistente");
               try {
-                blockchain.add(aux, false);
+                user.addNewBlock(aux, false, "Remove");
                 System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
               } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
                 System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
               }
             }
 
+          } else if (input.matches("^(lookup\\s\\d+)$")) {
+            System.out.println("Buscaste un elemento");
+            Integer aux = Integer.parseInt(input.substring(7));
+            System.out.println("Buscando nodo: " + aux);
+            String auxString = "";
+            LinkedList<Integer> auxList = server.getBlockNumbersThatModifiedTheNode(aux);
+            if (auxList != null) {
+              for (Integer eachBlockNumber : auxList) {
+                auxString += eachBlockNumber + " ";
+              }
+            }
+            System.out.println("Números de bloques que modificaron al nodo: " + auxString);
+
           } else if (input.matches("^(validate)$")) {
-            if (blockchain.checkBlockchainStatus()) {
+            if (user.checkBlockchainStatus()) {
               System.out.println("La blockchain es válida\n");
             } else {
               System.out.println("La blockchain es inválida\n");
             }
 
           } else if (input.matches("^(modify)$")) {
-            System.out.println("Quisiste modificar archivo, todavia no esta listo");
+            Integer blockNumber = -1;
+            Integer dataValue = -1;
+            String auxInput;
+            System.out.print("Ingrese el número de bloque que desea modificar: ");
+            auxInput = ConsoleReader.readingFromConsole();
+            if (auxInput.matches("^\\d+")) {
+              blockNumber = Integer.parseInt(auxInput);
+              System.out.print("Ingrese el valor: ");
+              auxInput = ConsoleReader.readingFromConsole();
+              if (auxInput.matches("^\\d+")) {
+                dataValue = Integer.parseInt(auxInput);
+                if (blockNumber < user.getBlockchainSize()) {
+                  user.modifyBlock(blockNumber, dataValue);
+                  System.out.println("Modificaste el bloque número " + blockNumber + " con el valor " + dataValue + "\n");
+                } else {
+                  System.out.println("No existe ese número de bloque\n");
+                }
+              } else {
+                System.out.println("Error, debe ingresar un número\n");
+              }
+            } else {
+              System.out.println("Error, debe ingresar un número\n");
+            }
 
           } else if (input.matches("^(exit)$")) {
             binaryTreeView.closeWindow();
@@ -132,14 +167,10 @@ public class MainHandler {
             break;
 
           } else {
-            System.out.println("Horrible input");
+            System.out.println("Error en el input");
           }
 
-          //DELETE LINEA 139 AND 140 AND DECOMMENT LINE 142 WHEN MERGING
-          System.out.println(this.avlTree == this.blockchain.getBlockchain().getFirst().getData().getAvlTree());
-          binaryTreeView.refresh((Node<Integer>) this.blockchain.getBlockchain().getFirst().getData().getAvlTree().getRoot());
-
-//          binaryTreeView.refresh(avlTree.getRoot());
+          binaryTreeView.refresh(avlTree.getRoot());
         }
       }
 

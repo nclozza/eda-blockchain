@@ -1,8 +1,5 @@
 package blockchain;
 
-/**
- * Created by Nico on 5/10/2017.
- */
 public abstract class Operation<T> {
 
   private String name;
@@ -33,5 +30,16 @@ public abstract class Operation<T> {
 
   public String toStringForHash() {
     return this.getName() + this.getData() + this.isStatus();
+  }
+
+  /**
+   * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
+   */
+  public void modifyOperation(T data) {
+    this.data = data;
+  }
+
+  public String oprationClass() {
+    return "";
   }
 }

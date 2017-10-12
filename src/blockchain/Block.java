@@ -50,4 +50,11 @@ public class Block<T> {
     this.nonce = auxNonce;
     this.hash = auxHash;
   }
+
+  /**
+   * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
+   */
+  public void modifyBlock(int zeros) {
+    this.setNonceAndHash(zeros);
+  }
 }
