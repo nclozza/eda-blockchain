@@ -425,7 +425,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
      * @return  A String of the pre-order traversal of the subtree, each node's content is separated by a space.
      */
     public String preOrder() {
-        String ret = postOrderR(header);
+        String ret = preOrderR(header);
         int length = ret.length();
 
         if (length == 0) {
@@ -446,9 +446,9 @@ public class AVLTree<T extends Comparable<? super T>> implements Cloneable{
         String ret = "";
 
         if (node != null) {
-            ret = ret.concat(node.getData().toString() + " ");
-            ret = ret.concat(preOrderR(node.getLeft()));
-            ret = ret.concat(preOrderR(node.getRight()));
+            ret += node.getData().toString() + " ";
+            ret += preOrderR(node.getLeft());
+            ret += preOrderR(node.getRight());
         }
 
         return ret;

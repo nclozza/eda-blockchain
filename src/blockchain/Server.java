@@ -5,8 +5,8 @@ import java.util.LinkedList;
 
 public class Server<T extends Comparable<? super T>> {
 
-  HashMap<String, AVLTree<T>> avlTreeStates = new HashMap<>();
-  HashMap<T, LinkedList<Integer>> modifiedNodesByBlocks = new HashMap<>();
+  private HashMap<String, AVLTree<T>> avlTreeStates = new HashMap<>();
+  private HashMap<T, LinkedList<Integer>> modifiedNodesByBlocks = new HashMap<>();
 
   public AVLTree<T> getAVLTreeState(String avlTreeHash) {
     return avlTreeStates.get(avlTreeHash);
@@ -20,9 +20,15 @@ public class Server<T extends Comparable<? super T>> {
     return modifiedNodesByBlocks.get(node);
   }
 
-  public void setModifiedNodesByBlock(LinkedList<T> modifiedNodes, Integer blockNumber) {
-    for(T eachModifiedNode : modifiedNodes) {
-      modifiedNodesByBlocks.get(eachModifiedNode).add(blockNumber);
+  public void setModifiedNodesByBlock(LinkedList<Node<T>> modifiedNodes, Integer blockNumber) {
+    for(Node<T> eachModifiedNode : modifiedNodes) {
+      if (modifiedNodesByBlocks.get(eachModifiedNode.getData()) == null) {
+        LinkedList<Integer> auxList = new LinkedList<>();
+        auxList.add(blockNumber);
+        modifiedNodesByBlocks.put(eachModifiedNode.getData(), auxList);
+      } else {
+        modifiedNodesByBlocks.get(eachModifiedNode.getData()).add(blockNumber);
+      }
     }
   }
 }

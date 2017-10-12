@@ -2,7 +2,6 @@ package blockchain;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class Blockchain<T extends Comparable<? super T>> {
 
@@ -51,24 +50,52 @@ public class Blockchain<T extends Comparable<? super T>> {
   }
 
   public int getActualBlockNumber() {
-    return blockchain.size() - 1;
+    return blockchain.size();
   }
 
-  public void addNewBlock(T element, boolean status) throws InvalidBlockchainStatus {
+  public int getBlockchainSize() {
+    return blockchain.size();
+  }
 
+  /**
+   * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
+   */
+  public void modifyBlock(int blockNumber, T dataValue) {
+    String operation = blockchain.get(blockchain.size() - blockNumber - 1).getData().getOperation().oprationClass();
+    blockchain.set(blockchain.size() - blockNumber - 1, this.newBlock(dataValue, true, operation));
+  }
+
+  public void addNewBlock(T element, boolean status, String operation) throws InvalidBlockchainStatus {
     if (!this.checkBlockchainStatus()) {
       throw new InvalidBlockchainStatus();
     }
+    blockchain.addFirst(this.newBlock(element, status, operation));
+  }
 
-    Add<T> operation = new Add<>(element, status);
-    Data<T> data = new Data<>(operation, this.avlTree);
+  private Block<T> newBlock(T element, boolean status, String operation) {
+    Operation<T> newOperation = new Add<>(element, status);
+    switch (operation) {
+      case "Add":
+        break;
+
+      case "Remove":
+        newOperation = new Remove<>(element, status);
+        break;
+
+      case "Lookup":
+        newOperation = new Lookup<>(element, status);
+        break;
+    }
+
+    Data<T> data = new Data<>(newOperation, SHA256.getInstance().hash(avlTree.toStringForHash()));
     String previousBlockHash;
     if (blockchain.size() == 0) {
       previousBlockHash = genesisHash;
     } else {
       previousBlockHash = blockchain.getFirst().getHash();
     }
-    Block<T> block = new Block<>(this.blockchain.size(), data, previousBlockHash, zeros);
-    this.blockchain.addFirst(block);
+    Block<T> block = new Block<>(blockchain.size(), data, previousBlockHash, zeros);
+    return block;
   }
+
 }

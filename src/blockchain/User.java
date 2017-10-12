@@ -12,8 +12,8 @@ public class User<T extends Comparable<? super T>> {
     blockchain.setZeros(zeros);
   }
 
-  public void addNewBlock(T element, boolean status) throws InvalidBlockchainStatus {
-    blockchain.addNewBlock(element, status);
+  public void addNewBlock(T element, boolean status, String operation) throws InvalidBlockchainStatus {
+    blockchain.addNewBlock(element, status, operation);
   }
 
   public String getNewBlockHash() {
@@ -22,6 +22,21 @@ public class User<T extends Comparable<? super T>> {
 
   public int getActualBlockNumber() {
     return blockchain.getActualBlockNumber();
+  }
+
+  public void updateAVL(AVLTree<T> avlTree) {
+    blockchain.updateAVL(avlTree);
+  }
+
+  public int getBlockchainSize() {
+    return blockchain.getBlockchainSize();
+  }
+
+  /**
+   * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
+   */
+  public void modifyBlock(int blockNumber, T dataValue) {
+    blockchain.modifyBlock(blockNumber, dataValue);
   }
 
 }
