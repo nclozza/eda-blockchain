@@ -11,14 +11,14 @@ public class MainHandler {
   private static final String EXIT_COMMAND = "exit";
 
   private AVLTree<Integer> avlTree;
-  private Blockchain<Integer> blockchain;
-  private HashMap<Integer, LinkedList<Integer>> hashMap;
   private BinaryTreeView<Integer> binaryTreeView;
+  private Server<Integer> server;
+  private User<Integer> user;
 
   public MainHandler() {
+    this.server = new Server<>();
+    this.user = new User<>();
     this.avlTree = new AVLTree<>();
-    this.blockchain = new Blockchain<>();
-    this.hashMap = new HashMap<>();
     try {
       this.binaryTreeView = new BinaryTreeView<Integer>(avlTree.getRoot(), 500, 500);
     } catch (IOException e) {
@@ -39,7 +39,7 @@ public class MainHandler {
 
           if (input.matches("^\\d*$")) {
             Integer aux = Integer.parseInt(input.substring(0));
-            blockchain.setZeros(aux);
+            user.setZeros(aux);
             zerosSet = true;
             System.out.println("Blockchain inicializada con " + aux + " cero" + (aux == 0 || aux > 1 ? "s" : ""));
             System.out.println();
@@ -58,12 +58,14 @@ public class MainHandler {
             System.out.println("Agregando nodo: " + aux);
 
             try {
-              avlTree.insert(aux);
+              LinkedList<Node<Integer>> listOfModifiedNodes = avlTree.insert(aux);
+              server.setModifiedNodesByBlock(listOfModifiedNodes, user.getActualBlockNumber());
+              server.setAvlTreeState(avlTree.toStringForHash(), avlTree.clone());
               System.out.println("Se agrego correctamente el nodo: " + aux);
               try {
-                blockchain.add(aux, true);
+                user.addNewBlock(aux, true);
                 System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
               } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
                 System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
@@ -72,9 +74,9 @@ public class MainHandler {
             } catch (DuplicateNodeInsertException e) {
               System.out.println("No se pudo agregar, nodo ya existente");
               try {
-                blockchain.add(aux, false);
+                user.addNewBlock(aux, false);
                 System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
               } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
                 System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
@@ -84,7 +86,12 @@ public class MainHandler {
           } else if (input.matches("^(lookup\\s\\d*)$")) {
             System.out.println("Buscaste un elemento");
             Integer aux = Integer.parseInt(input.substring(7));
-            System.out.println("Voy a buscar este nodo: " + aux);
+            System.out.println("Buscando nodo: " + aux);
+            String auxString = "";
+            for (Integer eachBlockNumber : server.getBlockNumbersThatModifiedTheNode(aux)) {
+              auxString += eachBlockNumber + " ";
+            }
+            System.out.println("Números de bloques que modificaron al nodo: " + auxString);
 
           } else if (input.matches("^(remove\\s\\d*)$")) {
             Integer aux = Integer.parseInt(input.substring(7));
@@ -94,9 +101,9 @@ public class MainHandler {
               avlTree.delete(aux);
               System.out.println("Se eliminó correctamente el nodo: " + aux);
               try {
-                blockchain.add(aux, true);
+                user.addNewBlock(aux, true);
                 System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
               } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
                 System.out.println("La blockchain es inálida, no se pueden realizar operaciones\n");
@@ -105,9 +112,9 @@ public class MainHandler {
             } catch (NodeNotFoundException e) {
               System.out.println("No se pudo eliminar, nodo inexistente");
               try {
-                blockchain.add(aux, false);
+                user.addNewBlock(aux, false);
                 System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + blockchain.getNewBlockHash() + "\n");
+                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
 
               } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
                 System.out.println("La blockchain es inválida, no se pueden realizar operaciones\n");
@@ -115,7 +122,7 @@ public class MainHandler {
             }
 
           } else if (input.matches("^(validate)$")) {
-            if (blockchain.checkBlockchainStatus()) {
+            if (user.checkBlockchainStatus()) {
               System.out.println("La blockchain es válida\n");
             } else {
               System.out.println("La blockchain es inválida\n");

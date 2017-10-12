@@ -42,7 +42,11 @@ public class Blockchain<T extends Comparable<? super T>> {
     return blockchain.getFirst().getHash();
   }
 
-  public void add(T element, boolean status) throws InvalidBlockchainStatus {
+  public int getActualBlockNumber() {
+    return blockchain.size() - 1;
+  }
+
+  public void addNewBlock(T element, boolean status) throws InvalidBlockchainStatus {
 
     if (!this.checkBlockchainStatus()) {
       throw new InvalidBlockchainStatus();
@@ -59,13 +63,4 @@ public class Blockchain<T extends Comparable<? super T>> {
     Block<T> block = new Block<>(this.blockchain.size(), data, previousBlockHash, zeros);
     this.blockchain.addFirst(block);
   }
-
-  /**
-   * TODO: Please check the method preOrder in AVLTree Class, it's really necessary this kind of implementation?
-   */
-  public void printAVLTree() {
-    this.avlTree.preOrder(this.avlTree.getRoot());
-  }
-
-
 }
