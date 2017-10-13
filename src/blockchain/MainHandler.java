@@ -43,19 +43,7 @@ public class MainHandler {
         try {
             while (true) {
                 if (!zerosSet) {
-                    System.out.print("Ingrese la cantidad de ceros: ");
-                    input = ConsoleReader.readingFromConsole();
-
-                    if (input.matches("^\\d+$")) {
-                        Integer aux = Integer.parseInt(input);
-                        user.setZeros(aux);
-                        zerosSet = true;
-
-                        System.out.println("Blockchain inicializada con " + aux + " cero"
-                                + (aux == 0 || aux > 1 ? "s\n" : "\n"));
-                    } else {
-                        System.out.println("No se ingreso un numero.\n");
-                    }
+                    zerosSet = setZeros(zerosSet);
                 } else {
                     System.out.println("Enter some text, or '" + EXIT_COMMAND + "' to quit");
                     System.out.print("> ");
@@ -198,5 +186,23 @@ public class MainHandler {
         } catch (IOException e) {
             System.out.println("Exception has been thrown.");
         }
+    }
+
+    private boolean setZeros(boolean zerosSet) throws IOException {
+        System.out.print("Ingrese la cantidad de ceros: ");
+        String input = ConsoleReader.readingFromConsole();
+
+        if (input.matches("^\\d+$")) {
+            Integer aux = Integer.parseInt(input);
+            user.setZeros(aux);
+            zerosSet = true;
+
+            System.out.println("Blockchain inicializada con " + aux + " cero"
+                    + (aux == 0 || aux > 1 ? "s\n" : "\n"));
+        } else {
+            System.out.println("No se ingreso un numero.\n");
+        }
+
+        return zerosSet;
     }
 }
