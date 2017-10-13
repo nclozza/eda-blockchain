@@ -93,14 +93,14 @@ public class Blockchain<T extends Comparable<? super T>> {
      * IMPORTANT: This method is only available so we can simulate an unwanted data manipulation
      */
     public void modifyBlock(int blockNumber, T dataValue) {
-        String operation = blockchain.get(blockchain.size() - blockNumber - 1).getData().getOperation().oprationClass();
+        String operation = blockchain.get(blockchain.size() - blockNumber - 1).getData().getOperation().operationClass();
 
         Block<T> auxBlock = blockchain.get(blockchain.size() - blockNumber - 1);
         auxBlock.getData().getOperation().modifyOperation(dataValue);
 
         blockchain.set(blockchain.size() - blockNumber - 1,
-                new Block<>(blockchain.size() - blockNumber - 1, auxBlock.getData(), auxBlock.getPreviousBlockHash(),
-                        zeros));
+                new Block<>(blockchain.size() - blockNumber - 1, auxBlock.getData(),
+                        auxBlock.getPreviousBlockHash(), zeros));
     }
 
     /**

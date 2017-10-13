@@ -1,7 +1,6 @@
 package blockchain;
 
 public class InvalidBlockchainStatus extends Exception {
-
   public InvalidBlockchainStatus() {
   }
 

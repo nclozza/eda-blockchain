@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The MainHandler class is an implementation suited to handle the entire project consisting of the AVL tree and the
+ * blockchain. The main handler's main task is to run the project for a certain user connected to the server.
+ */
 public class MainHandler {
     private static final String EXIT_COMMAND = "exit";
 
@@ -28,6 +32,10 @@ public class MainHandler {
         }
     }
 
+    /**
+     * The handler's main task, running the project asking the user for input and translating that action to an
+     * operation to the AVL tree, the blockchain or both.
+     */
     public void runCode() {
         String input;
         boolean zerosSet = false;
