@@ -55,31 +55,47 @@ public class MainHandler {
 
                     input = ConsoleReader.readingFromConsole();
 
-                    if (input.matches("^(add\\s-?\\d+)$")) {
-                        add(input);
-                    } else if (input.matches("^(remove\\s-?\\d+)$")) {
-                        remove(input);
-                    } else if (input.matches("^(lookup\\s-?\\d+)$")) {
-                        lookup(input);
-                    } else if (input.matches("^(validate)$")) {
-                        validate();
-                    } else if (input.matches("^(modify)$")) {
-                        modify();
-                    } else if (input.matches("^(exit)$")) {
-                        binaryTreeView.closeWindow();
+                    try {
+                        if (input.matches("^(add\\s-?\\d+)$")) {
+                            if (!user.checkBlockchainStatus()) {
+                                throw new InvalidBlockchainStatus();
+                            }
 
-                        System.out.println("Hasta luego, vuelva prontos.");
+                            add(input);
+                        } else if (input.matches("^(remove\\s-?\\d+)$")) {
+                            if (!user.checkBlockchainStatus()) {
+                                throw new InvalidBlockchainStatus();
+                            }
 
-                        break;
-                    } else {
-                        System.out.println("Error en el input.");
+                            remove(input);
+                        } else if (input.matches("^(lookup\\s-?\\d+)$")) {
+                            if (!user.checkBlockchainStatus()) {
+                                throw new InvalidBlockchainStatus();
+                            }
+
+                            lookup(input);
+                        } else if (input.matches("^(validate)$")) {
+                            validate();
+                        } else if (input.matches("^(modify)$")) {
+                            modify();
+                        } else if (input.matches("^(exit)$")) {
+                            binaryTreeView.closeWindow();
+
+                            System.out.println("Hasta luego, vuelva prontos.");
+
+                            break;
+                        } else {
+                            System.out.println("Error en el input.");
+                        }
+                    } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+                        System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
                     }
 
                     binaryTreeView.refresh(avlTree.getRoot());
                 }
             }
         } catch (IOException e) {
-            System.out.println("Exception has been thrown.");
+            System.out.println("Error en el input.");
         }
     }
 
@@ -119,21 +135,15 @@ public class MainHandler {
 
             System.out.println("Generando hash del bloque, esto puede demorar.");
             System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
-        } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-            System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
         } catch (CloneNotSupportedException e) {
             System.out.println("No se pudo guardar el nuevo estado del AVL en el servidor.");
         } catch (DuplicateNodeInsertException e) {
             System.out.println("No se pudo agregar, nodo ya existente.");
 
-            try {
-                user.addNewBlock(node, false, "Add");
+            user.addNewBlock(node, false, "Add");
 
-                System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
-            } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-                System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
-            }
+            System.out.println("Generando hash del bloque, esto puede demorar.");
+            System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
         }
     }
 
@@ -154,21 +164,15 @@ public class MainHandler {
 
             System.out.println("Generando hash del bloque, esto puede demorar.");
             System.out.println("Hash generado: " + user.getNewBlockHash() + ".\n");
-        } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-            System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
         } catch (CloneNotSupportedException e) {
             System.out.println("No se pudo guardar el nuevo estado del AVL en el servidor.");
         } catch (NodeNotFoundException e) {
             System.out.println("No se pudo eliminar, nodo inexistente.");
 
-            try {
-                user.addNewBlock(node, false, "Remove");
+            user.addNewBlock(node, false, "Remove");
 
-                System.out.println("Generando hash del bloque, esto puede demorar.");
-                System.out.println("Hash generado: " + user.getNewBlockHash() + ".\n");
-            } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-                System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
-            }
+            System.out.println("Generando hash del bloque, esto puede demorar.");
+            System.out.println("Hash generado: " + user.getNewBlockHash() + ".\n");
         }
     }
 

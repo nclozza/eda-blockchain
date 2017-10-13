@@ -109,14 +109,8 @@ public class Blockchain<T extends Comparable<? super T>> {
      * @param element   The element that will be passed to the operation method.
      * @param status    The status of the operation, true if it was done successfully, false otherwise.
      * @param operation The operation to be done upon the tree.
-     * @throws InvalidBlockchainStatus if the the references between two blocks do not match (see checkBlockchainStatus
-     *         method for further reference)
      */
-    public void addNewBlock(T element, boolean status, String operation) throws InvalidBlockchainStatus {
-        if (!this.checkBlockchainStatus()) {
-            throw new InvalidBlockchainStatus();
-        }
-
+    public void addNewBlock(T element, boolean status, String operation) {
         Operation<T> newOperation = new Add<>(element, status);
 
         if (operation.equals("Remove")) {
