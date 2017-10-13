@@ -59,38 +59,7 @@ public class MainHandler {
                     } else if (input.matches("^(validate)$")) {
                         validate();
                     } else if (input.matches("^(modify)$")) {
-                        Integer blockNumber = -1;
-                        Integer dataValue = -1;
-                        String auxInput;
-
-                        System.out.print("Ingrese el número de bloque que desea modificar: ");
-
-                        auxInput = ConsoleReader.readingFromConsole();
-
-                        if (auxInput.matches("^\\d+")) {
-                            blockNumber = Integer.parseInt(auxInput);
-
-                            System.out.print("Ingrese el valor: ");
-
-                            auxInput = ConsoleReader.readingFromConsole();
-
-                            if (auxInput.matches("^\\d+")) {
-                                dataValue = Integer.parseInt(auxInput);
-
-                                    if (blockNumber < user.getBlockchainSize()) {
-                                        user.modifyBlock(blockNumber, dataValue);
-
-                                        System.out.println("Modificaste el bloque número " + blockNumber
-                                                + " con el valor " + dataValue + ".\n");
-                                    } else {
-                                        System.out.println("No existe ese número de bloque.\n");
-                                    }
-                            } else {
-                                System.out.println("Error, debe ingresar un número.\n");
-                            }
-                        } else {
-                            System.out.println("Error, debe ingresar un número\n");
-                        }
+                        modify();
                     } else if (input.matches("^(exit)$")) {
                         binaryTreeView.closeWindow();
 
@@ -222,6 +191,40 @@ public class MainHandler {
             System.out.println("La blockchain es válida.\n");
         } else {
             System.out.println("La blockchain es inválida.\n");
+        }
+    }
+
+    private void modify() throws IOException {
+        Integer blockNumber = -1;
+        Integer dataValue = -1;
+
+        System.out.print("Ingrese el índice del bloque que desea modificar: ");
+
+        String input = ConsoleReader.readingFromConsole();
+
+        if (input.matches("^\\d+")) {
+            blockNumber = Integer.parseInt(input);
+
+            System.out.print("Ingrese el valor: ");
+
+            input = ConsoleReader.readingFromConsole();
+
+            if (input.matches("^\\d+")) {
+                dataValue = Integer.parseInt(input);
+
+                if (blockNumber < user.getBlockchainSize()) {
+                    user.modifyBlock(blockNumber, dataValue);
+
+                    System.out.println("Modificaste el bloque número " + blockNumber
+                            + " con el valor " + dataValue + ".\n");
+                } else {
+                    System.out.println("No existe ese número de bloque.\n");
+                }
+            } else {
+                System.out.println("Error, debe ingresar un número.\n");
+            }
+        } else {
+            System.out.println("Error, debe ingresar un número.\n");
         }
     }
 }
