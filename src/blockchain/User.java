@@ -17,7 +17,7 @@ public class User<T extends Comparable<? super T>> {
         blockchain.setZeros(zeros);
     }
 
-    public void addNewBlock(T element, boolean status, String operation) throws InvalidBlockchainStatus {
+    public void addNewBlock(T element, boolean status, String operation) {
         blockchain.addNewBlock(element, status, operation);
     }
 
