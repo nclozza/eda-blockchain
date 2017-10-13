@@ -55,22 +55,7 @@ public class MainHandler {
                     } else if (input.matches("^(remove\\s\\d+)$")) {
                         remove(input);
                     } else if (input.matches("^(lookup\\s\\d+)$")) {
-                        System.out.println("Buscaste un elemento");
-
-                        Integer aux = Integer.parseInt(input.substring(7));
-
-                        System.out.println("Buscando nodo: " + aux);
-
-                        String auxString = "";
-                        LinkedList<Integer> auxList = server.getBlockNumbersThatModifiedTheNode(aux);
-
-                        if (auxList != null) {
-                            for (Integer eachBlockNumber : auxList) {
-                                auxString += eachBlockNumber + " ";
-                            }
-                        }
-
-                        System.out.println("Números de bloques que modificaron al nodo: " + auxString);
+                        lookup(input);
                     } else if (input.matches("^(validate)$")) {
                         if (user.checkBlockchainStatus()) {
                             System.out.println("La blockchain es válida.\n");
@@ -214,6 +199,25 @@ public class MainHandler {
             } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
                 System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
             }
+        }
+    }
+
+    private void lookup(String input) {
+        Integer node = Integer.parseInt(input.substring(7));
+
+        System.out.println("Buscando el nodo: " + node);
+
+        String blockIndexes = "";
+        LinkedList<Integer> blockList = server.getBlockNumbersThatModifiedTheNode(node);
+
+        if (blockList != null) {
+            for (Integer eachBlockNumber : blockList) {
+                blockIndexes += eachBlockNumber + " ";
+            }
+
+            System.out.println("Índices de bloques que modificaron al nodo: " + blockIndexes);
+        } else {
+            System.out.println("El nodo " + node +  " nunca fue modificado porque nunca pertenció al árbol.");
         }
     }
 }
