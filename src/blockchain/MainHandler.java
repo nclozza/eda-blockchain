@@ -199,7 +199,6 @@ public class MainHandler {
 
             System.out.println("Generando hash del bloque, esto puede demorar.");
             System.out.println("Hash generado: " + user.getNewBlockHash() + ".\n");
-
         } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
             System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
         } catch (CloneNotSupportedException e) {
