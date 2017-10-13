@@ -10,6 +10,11 @@ import java.util.regex.Pattern;
 /**
  * The MainHandler class is an implementation suited to handle the entire project consisting of the AVL tree and the
  * blockchain. The main handler's main task is to run the project for a certain user connected to the server.
+ * It should be noted that this implementation of the MainHandler class offers only usage of the AVL tree with whole
+ * numbers. If the user were to want another type of data stored in the tree, then a different implementation should be
+ * made according to the data's requirements. The fact that the MainHandler class has such a short-scope usage does not
+ * forbid the AVL tree or the blockchain of working with a different type of data other than whole numbers, the
+ * implementation for both the tree and the blockchain would still work.
  */
 public class MainHandler {
     private static final String EXIT_COMMAND = "exit";
@@ -50,11 +55,11 @@ public class MainHandler {
 
                     input = ConsoleReader.readingFromConsole();
 
-                    if (input.matches("^(add\\s\\d+)$")) {
+                    if (input.matches("^(add\\s-?\\d+)$")) {
                         add(input);
-                    } else if (input.matches("^(remove\\s\\d+)$")) {
+                    } else if (input.matches("^(remove\\s-?\\d+)$")) {
                         remove(input);
-                    } else if (input.matches("^(lookup\\s\\d+)$")) {
+                    } else if (input.matches("^(lookup\\s-?\\d+)$")) {
                         lookup(input);
                     } else if (input.matches("^(validate)$")) {
                         validate();
