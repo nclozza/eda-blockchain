@@ -224,6 +224,4 @@ public class MainHandler {
             System.out.println("La blockchain es inválida.\n");
         }
     }
-
-    
 }
