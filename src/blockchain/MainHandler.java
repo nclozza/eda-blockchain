@@ -51,34 +51,7 @@ public class MainHandler {
                     input = ConsoleReader.readingFromConsole();
 
                     if (input.matches("^(add\\s\\d+)$")) {
-                        Integer aux = Integer.parseInt(input.substring(4));
-                        System.out.println("Agregando nodo: " + aux);
-
-                        try {
-                            LinkedList<Node<Integer>> listOfModifiedNodes = avlTree.insert(aux);
-                            server.setModifiedNodesByBlock(listOfModifiedNodes, user.getActualBlockNumber());
-                            System.out.println("Se agrego correctamente el nodo: " + aux);
-                            user.addNewBlock(aux, true, "Add");
-                            AVLTree<Integer> auxAVLTree = (AVLTree<Integer>) avlTree.clone();
-                            server.setAvlTreeState(SHA256.getInstance().hash(avlTree.toStringForHash()), auxAVLTree);
-                            user.updateAVL(avlTree);
-                            System.out.println("Generando hash del bloque, esto puede demorar.");
-                            System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
-
-                        } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-                            System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
-                        } catch (CloneNotSupportedException e) {
-                            System.out.println("No se pudo guardar el nuevo estado del AVL en el servidor.");
-                        } catch (DuplicateNodeInsertException e) {
-                            System.out.println("No se pudo agregar, nodo ya existente.");
-                            try {
-                                user.addNewBlock(aux, false, "Add");
-                                System.out.println("Generando hash del bloque, esto puede demorar.");
-                                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
-                            } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
-                                System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
-                            }
-                        }
+                        add(input);
                     } else if (input.matches("^(remove\\s\\d+)$")) {
                         Integer aux = Integer.parseInt(input.substring(7));
                         System.out.println("Borrando nodo: " + aux);
@@ -205,4 +178,42 @@ public class MainHandler {
 
         return zerosSet;
     }
+
+    private void add(String input) {
+        Integer aux = Integer.parseInt(input.substring(4));
+
+        System.out.println("Agregando nodo: " + aux);
+
+        try {
+            LinkedList<Node<Integer>> listOfModifiedNodes = avlTree.insert(aux);
+            server.setModifiedNodesByBlock(listOfModifiedNodes, user.getActualBlockNumber());
+
+            System.out.println("Se agrego correctamente el nodo: " + aux);
+
+            user.addNewBlock(aux, true, "Add");
+            AVLTree<Integer> auxAVLTree = (AVLTree<Integer>) avlTree.clone();
+            server.setAvlTreeState(SHA256.getInstance().hash(avlTree.toStringForHash()), auxAVLTree);
+            user.updateAVL(avlTree);
+
+            System.out.println("Generando hash del bloque, esto puede demorar.");
+            System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
+        } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+            System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
+        } catch (CloneNotSupportedException e) {
+            System.out.println("No se pudo guardar el nuevo estado del AVL en el servidor.");
+        } catch (DuplicateNodeInsertException e) {
+            System.out.println("No se pudo agregar, nodo ya existente.");
+
+            try {
+                user.addNewBlock(aux, false, "Add");
+
+                System.out.println("Generando hash del bloque, esto puede demorar.");
+                System.out.println("Hash generado: " + user.getNewBlockHash() + "\n");
+            } catch (InvalidBlockchainStatus invalidBlockchainStatus) {
+                System.out.println("La blockchain es inválida, no se pueden realizar operaciones.\n");
+            }
+        }
+    }
+
+        
 }
