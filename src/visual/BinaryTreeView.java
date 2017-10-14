@@ -46,13 +46,13 @@ public class BinaryTreeView<T> extends JPanel {
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.setSize(new Dimension(width, height));
         f.setVisible(true);
-        
+
         setTree(tree);
     }
 
-    /*
-    * Set the display to show the given tree.
-    */
+    /**
+     * Set the display to show the given tree.
+     */
     public void setTree(Node<T> t) {
         if (t == null) {
             maxHeight = 0;
@@ -62,23 +62,24 @@ public class BinaryTreeView<T> extends JPanel {
         }
     }
 
-    /*
-    * Invoke this method whenever you would like the window
-    * to be refreshed, such as after updating the tree in some
-    * way.
-    */
+    /**
+     * Invoke this method whenever you would like the window to be refreshed, such as after updating the tree in some way.
+     */
     public void refresh(Node<T> node) {
         this.tree = node;
         paintImmediately(0, 0, getWidth(), getHeight());
     }
 
-    /*
-    * Draw the contents of the tree into the given Graphics
-    * context.
-    * It will place all info between minX and maxX in the x-direction,
-    * starting at location y in the y-direction.  Levels of the tree
-    * will be separated by yStep pixels.
-    */
+    /**
+     * Draws the contents of the tree into the given graphical context. It will place all info between minX and maxX in
+     * the x-direction, starting at location y in the y-direction. Levels of the tree will be separated by yStep pixels.
+     * @param g The graphical interface to be drawn on.
+     * @param minX  The minimum x coordinate.
+     * @param maxX  The maximum x coordinate.
+     * @param y The y coordinate.
+     * @param yStep The difference between each step in the y direction.
+     * @param tree  The tree to be drawn.
+     */
     protected void drawTree(Graphics g, int minX, int maxX, int y, int yStep, Node<T> tree) {
         if (tree != null) {
             String s = tree.getData().toString();
@@ -92,15 +93,14 @@ public class BinaryTreeView<T> extends JPanel {
             g.drawString(s, (minX + maxX) / 2 - width / 2, y + yStep / 2);
 
             if (!(tree.getLeft() == null)) {
-                // if left tree not empty, draw line to it and recursively
-                // draw that tree
+                // If the left subtree is not empty, draw line to it and recursively draw that tree
                 g.drawLine((minX + maxX) / 2 - xSep, y + yStep / 2 + 5, (minX + (minX + maxX) / 2) / 2,
                 y + yStep + yStep / 2 - height);
                 drawTree(g, minX, (minX + maxX) / 2, y + yStep, yStep, tree.getLeft());
             }
 
             if (!(tree.getRight() == null)) {
-                // same thing for right subtree.
+                // If the left subtree is not empty, draw line to it and recursively draw that tree
                 g.drawLine((minX + maxX) / 2 + xSep, y + yStep / 2 + 5, (maxX + (minX + maxX) / 2) / 2,
                 y + yStep + yStep / 2 - height);
                 drawTree(g, (minX + maxX) / 2, maxX, y + yStep, yStep, tree.getRight());
@@ -109,12 +109,12 @@ public class BinaryTreeView<T> extends JPanel {
     }
 
 
-    /*
-    * paint method unherited from the Swing library.  Just
-    * calls drawTree whenever the window needs to be repainted.
-    */
+    /**
+     * Paint method inherited from the Swing library. It calls drawTree whenever the window needs to be repainted.
+     * @param g The graphical interface to be painted.
+     */
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);      //clears the background
+        super.paintComponent(g);      // Clears the background
         if (tree != null) {
           int width = getWidth();
           int height = getHeight();

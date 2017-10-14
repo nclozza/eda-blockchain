@@ -29,7 +29,7 @@ public class Server<T extends Comparable<? super T>> {
         for(Node<T> eachModifiedNode : modifiedNodes) {
             if (modifiedNodesByBlocks.get(eachModifiedNode.getData()) == null) {
                 LinkedList<Integer> auxList = new LinkedList<>();
-                
+
                 auxList.add(blockNumber);
                 modifiedNodesByBlocks.put(eachModifiedNode.getData(), auxList);
             } else {
